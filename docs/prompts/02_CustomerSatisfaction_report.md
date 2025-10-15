@@ -28,7 +28,7 @@ https://docs.google.com/spreadsheets/d/1KZlqe6HvfufWMOejrlQbxfvGMaH_25KUrYMoUsJZ
 
 ## 아웃풋
 
-```
+
 ## 2025년 AI 솔루션 고객 만족도 조사 분석 보고서 (경영진 보고용)
 
 ### 1. 분석 개요
@@ -103,4 +103,4 @@ https://docs.google.com/spreadsheets/d/1KZlqe6HvfufWMOejrlQbxfvGMaH_25KUrYMoUsJZ
 | **2** | **구축/도입 자동화 및 간소화** | `기간 단축 필요`, `초기 학습 데이터 구축 부담` 해소를 위한 표준화된 자동화 툴킷 개발 및 **중소기업용(SME) Lite 버전** 출시. | [cite_start]다수 서비스에서 **반복적으로 제기된 구축 단계의 허들** 해소 및 잠재 시장 확대[cite: 1]. |
 | **3** | **고가치 전문 분야 집중 육성** | **산업별 솔루션** 및 **전략 수립** 컨설팅의 성공 레퍼런스를 타 산업군에 이식하고, 전담 인력 확대 및 지원 강화를 통해 초격차 확보. | [cite_start]NPS 70점 이상을 기록한 **최고 성과 카테고리**에 자원 집중[cite: 1]. |
 
-```
+

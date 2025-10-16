@@ -1,0 +1,197 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -96,
+        -112
+      ],
+      "id": "ff6fefd9-36d6-4352-aee1-d3ac1f8dd80c",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://www.yna.co.kr/rss/industry.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        112,
+        112
+      ],
+      "id": "d2de78ee-0431-46b4-a729-c42c69097c8b",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "maxItems": 3,
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        288,
+        112
+      ],
+      "id": "791cc703-f260-4022-ba13-5d2583e2aa7d",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "chatId": "8221322842",
+        "text": "=n8n에서 보낸다 , 당장 엎드려\n제목 : {{ $json.title }}\n발행일 : {{ $json.pubDate }}\n\n\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        112
+      ],
+      "id": "fe0cd8e7-9392-40ba-90c0-ffe13adfa2fb",
+      "name": "Send a text message1",
+      "webhookId": "fe0c1a2a-c69f-44c6-a6ba-43b4ed74d9d3",
+      "credentials": {
+        "telegramApi": {
+          "id": "KsGeR3zEu5LdJusP",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://news.sbs.co.kr/news/headlineRssFeed.do?plink=RSSREADER",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        -112
+      ],
+      "id": "693a0aa6-6334-40c3-9872-bb74fdcce7d8",
+      "name": "RSS Read1"
+    },
+    {
+      "parameters": {
+        "maxItems": 3,
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        272,
+        -112
+      ],
+      "id": "a4553796-856c-4639-ac2b-44600144e32b",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "chatId": "8221322842",
+        "text": "=n8n에서 보낸다 , 당장 엎드려\n제목 : {{ $json.title }}\n발행일 : {{ $json.pubDate }}\n\n\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        -112
+      ],
+      "id": "737ab9a0-301c-45d6-b68a-745874843e47",
+      "name": "Send a text message2",
+      "webhookId": "fe0c1a2a-c69f-44c6-a6ba-43b4ed74d9d3",
+      "credentials": {
+        "telegramApi": {
+          "id": "KsGeR3zEu5LdJusP",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read1": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8ff03e17-a6d4-4a65-b9f6-91f9ff9bbccd",
+  "meta": {
+    "instanceId": "184d2d55d2d2bf6864162501b6da1092d25bfc6022df0879a535c0e84bdbce32"
+  },
+  "id": "Z01IQs3iB97MWR6B",
+  "tags": []
+}

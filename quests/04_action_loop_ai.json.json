@@ -1,0 +1,295 @@
+{
+  "name": "04_action_loop_ai.json",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -576,
+        -144
+      ],
+      "id": "1e4126ca-4cce-4c9c-b92e-84a3b78d7c33",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"feeds\": [\"https://rss.donga.com/science.xml\"   ,\"http://rss.edaily.co.kr/stock_news.xml\"\n    ,\"https://news.sbs.co.kr/news/headlineRssFeed.do?plink=RSSREADER\"\n    ,\"https://news.sbs.co.kr/news/Subusu_RssFeed.do?plink=RSSREADER\"\n    ,\"https://www.yna.co.kr/rss/health.xml\"]\n \n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -368,
+        -144
+      ],
+      "id": "f45204eb-efd3-49c7-97cb-32a19d19c8cf",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "feeds",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -144
+      ],
+      "id": "6bf04470-1984-457e-9b6c-8ebd073ea21e",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        48,
+        -144
+      ],
+      "id": "2ee884be-d66e-408c-96c4-dce5b299ecd0",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.feeds }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        48
+      ],
+      "id": "7ddc6f04-4151-4013-910c-3136e2d0d7ea",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "maxItems": 2
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        384,
+        48
+      ],
+      "id": "9eeed7ac-83f5-43da-8887-db615869721d",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "41165a93-3a2b-42ea-9b96-556b71dd0cd6",
+              "name": "title",
+              "value": "={{ $('RSS Read').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "35ee82b0-39ee-4e6b-9fc3-4afff85ee664",
+              "name": "link",
+              "value": "={{ $('RSS Read').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "29be73c7-ced6-44b4-8d83-53bc0f42e30d",
+              "name": "pubDate",
+              "value": "={{ $('RSS Read').item.json.pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "126b2516-66d9-479b-bea9-b0406826b12b",
+              "name": "contentSnippet",
+              "value": "={{ $('RSS Read').item.json.contentSnippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        400
+      ],
+      "id": "bea53548-5ec8-4d4e-985f-6621a1d08c97",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=당신은 정리의 신이며 간략히 정리해줘\n입력 값 중 contentSnippet 필드 값을 10자로 줄여 요약해주고 \n그외의 쓸데없는 대답, 괄호, json 부호 등은 모두 없애줘\n\n## 입력값\n\n[\n  {\n    \"title\": \"정부 행정망 3년간 털렸다…공무원 전자인증서 해킹당해\",\n    \"link\": \"https://www.donga.com/news/Society/article/all/20251017/132582825/1\",\n    \"pubDate\": \"Fri, 17 Oct 2025 16:19:00 +0900\",\n    \"contentSnippet\": \"정부 전산망에 접속할 수 있는 ‘열쇠’인 행정전자서명(GPKI)이 해커에게 탈취되고, 실제 접속까지 허용된 사실이 드러났다. 공공기관의 전자결재와 보고를 담당하는 핵심 인프라가 뚫린 건 이번이 처음이다. 정부는 중국발 공격 가능성까지 열어두고 있다. 최초 공격 시점이 2022년 9월로, 3년 가까이 침투를 알아채지 못했다는 점에서 ‘전자정부’의 보안 체계가 뿌리부터 흔들렸다는 지적이 나온다.행정안전부와 국가정보원은 17일 “신원이 확인되지 않은 해킹그룹이 공무원 약 650명의 GPKI 인증서와 12명의 비밀번호를 탈취했고, 일부는 이를 이용해 정부 전산망인 ‘온나라’ 시스템에 접속해 자료를 열람한 것으로 확인됐다”고 밝혔다. GPKI는 공무원 신원 확인과 결재·보고 인증에 필수적인 수단으로, 실제 유출 피해가 공식 확인된 건 이번이 처음이다.국정원은 올해 7월에야 해킹 정황을 인지하고 악용된 인터넷주고(IP)를 차단하는 등 긴급 조치를 취했다. 하지만 외신이 8월 관련 사실을 보도한\"\n  }\n\n\n## 출력 예시 (json 형식)\n\n{\n\n\"title\": 텍스트\n\n\"link\": 링크\n\n\"contentSnippet \": 텍스트\n\n\"pubDate\": 날짜\n\n}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        400
+      ],
+      "id": "24059399-ee48-4d06-9282-2e0d118c4a5b",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mdhsuVe2MrIc10Ti",
+          "name": "Google Gemini(PaLM) Api account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8221322842",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        400
+      ],
+      "id": "8e94f135-6851-40eb-85ff-5863e018123c",
+      "name": "Send a text message",
+      "webhookId": "723af24d-0304-42d8-b09d-95cf17cb1e01",
+      "credentials": {
+        "telegramApi": {
+          "id": "KsGeR3zEu5LdJusP",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "254679f1-113d-4f9f-a300-a0f9c4163266",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "184d2d55d2d2bf6864162501b6da1092d25bfc6022df0879a535c0e84bdbce32"
+  },
+  "id": "0LYk5qVZXnp6DdWW",
+  "tags": []
+}

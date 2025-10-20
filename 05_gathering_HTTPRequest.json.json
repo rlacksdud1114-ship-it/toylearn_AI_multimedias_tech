@@ -1,0 +1,775 @@
+{
+  "name": "05_gathering_HTTPRequest.json",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.finance.naver.com/siseJson.naver",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            },
+            {
+              "name": "requestType",
+              "value": "1"
+            },
+            {
+              "name": "startTime",
+              "value": "={{ $json.startTime }}"
+            },
+            {
+              "name": "endTime",
+              "value": "={{ $json.endTime }}"
+            },
+            {
+              "name": "timeframe",
+              "value": "day"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -64,
+        -160
+      ],
+      "id": "a41d250e-20ad-42d1-88e5-70ba5c21a15e",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=이번 분석에서는 최근 3개월 종가 데이터를 기반으로 다음 사항들을 종합적으로 평가해 주세요.\n가격 추이와 주요 변동\n거래량과 외국인 소진율의 흐름\n투자 전략 관점의 해석\n점수를 0~100으로 산출하고, 그 근거를 이유에 상세히 적어주세요.\n예시는 아래와 같아:\\n\\n{\\\"score\\\": (0~100), \\\"reason\\\": (상세 분석 근거)}\\n\\n\n\n{{ $json.data }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        144,
+        -160
+      ],
+      "id": "e75696f4-0f8a-4049-bd47-e8bbc9f57098",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "RnBSsXo7SgUymmKL",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "주식 종목 정보 입력",
+        "formDescription": "주식 종목 정보 입력하여 관련 기간 동안 데이터로 분석",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "symbol"
+            },
+            {
+              "fieldLabel": "startTime"
+            },
+            {
+              "fieldLabel": "endTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -224,
+        -160
+      ],
+      "id": "5c2d9d0b-43c5-4347-bf51-1b3fe7733c1e",
+      "name": "On form submission",
+      "webhookId": "04ca5546-0414-42a1-9479-b1710d3cbbae"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=다음은 하나의 종목에 대한 100일 이상 마일의 추가 주가 데이터야. 이 데이터를 기반으로 시계열 예측 및 기법 분석(ARIMA/SARIMA, LSTM, 변동성/수익률 분석 등)을 이용해 앞으로의 7일 주가를 예측하고 각 예측 모델의 정확도를 평가한 종합 결과를 작성해줘.\\n\\n출력은 정확한 JSON 형식이어야 해. 예시는 아래와 같아:\\n\\n{\\\"score\\\": (0~100), \\\"reason\\\": (상세 분석 근거)}\\n\\n\n데이터는 아래와 같아:\n\n\n {{ $json.data }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        144,
+        64
+      ],
+      "id": "e7d4c9fb-a7e6-4d31-9457-5e430a358da8",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "RnBSsXo7SgUymmKL",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5917e3a4-e2b5-4d3d-a58f-aa1d216487bc",
+              "name": "title",
+              "value": "종가 데이터 분석",
+              "type": "string"
+            },
+            {
+              "id": "a455ab15-23bf-4e2b-be34-05d178554abf",
+              "name": "score",
+              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).score }}",
+              "type": "string"
+            },
+            {
+              "id": "048c709a-55c3-4bff-b4b6-6f73ced214ce",
+              "name": "reason",
+              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).reason }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        496,
+        -160
+      ],
+      "id": "ca26db0c-3121-4cd9-8bb3-f6dd149d40df",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b4855604-6ba5-4383-977c-1e6d7e1ed4a5",
+              "name": "title",
+              "value": "시계열 모델 분석",
+              "type": "string"
+            },
+            {
+              "id": "1c62331c-0a13-4d66-bfb2-56a5b0b2ed28",
+              "name": "score",
+              "value": "={{JSON.parse ($json.candidates[0].content.parts[0].text).score }}",
+              "type": "string"
+            },
+            {
+              "id": "fb0f3cd3-0d2f-42c7-ab8f-e688647fabf6",
+              "name": "reason",
+              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).reason }}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        496,
+        64
+      ],
+      "id": "8bf84c95-98e4-4b2f-a10b-011031b8506a",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        752,
+        -64
+      ],
+      "id": "b63ca71b-9fe3-4600-91fb-a345a551a265",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "title"
+            },
+            {
+              "fieldToAggregate": "score"
+            },
+            {
+              "fieldToAggregate": "reason"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -64
+      ],
+      "id": "4b01ff64-c741-4e7e-b7f4-f2506b9f89d7",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=아래는 주가 분석 프로젝트의 핵심 데이터이다.\n이 데이터는 ‘종가 데이터 분석’, ‘시계열 모델 분석’, 두 가지 범주로 구성되어 있다.\n각 항목의 세부 분석 내용(reason)과 모델 신뢰도(score)를 기반으로, 다음 조건에 맞는 **최종 분석 결과 요약 보고서**를 작성하라.\n요구사항:\n1. 각 분석 범주의 핵심 포인트를 종합하고, 서로의 관계를 설명하라.\n2. 모델 성능 점수(score)에 따른 신뢰도 해석을 포함하라.\n3. 예측 결과에 대한 종합 의견을 제시하고, 중장기 투자 시사점을 정리하라.\n4. 데이터의 한계, 예측 오차 범위, 외부 요인에 대한 언급을 포함하라.\n5. 리포트 마지막에는 “예측의 신뢰도 종합평가” 섹션을 추가하라.\n\n입력 데이터:\ntitle : {{ $json.title }}\nscore : {{ $json.score }}\nreason : {{ $json.reason }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        -64
+      ],
+      "id": "69e4a96b-d656-4c12-a1be-ddc17bec9c91",
+      "name": "Message a model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "RnBSsXo7SgUymmKL",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=최근 60일치 일별 주가 데이터(종가, 거래량)**를 분석하여 단기적인 주가 추세를 파악해라. 특히 5일 및 20일 이동평균선의 배열과 거래량 변화를 중점적으로 분석하여, **향후 5일간의 주가 전망(상승/하락/횡보)**을 예측해줘\n.\\n\\n출력은 정확한 JSON 형식이어야 해. 예시는 아래와 같아:\\n\\n{\\\"score\\\": (0~100), \\\"reason\\\": (상세 분석 근거)}\\n\\n\n데이터는 아래와 같아:\n\n\n\n {{ $json.data }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        128,
+        272
+      ],
+      "id": "309c6feb-cf93-4233-b0c5-e5ed451bd01c",
+      "name": "Message a model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "RnBSsXo7SgUymmKL",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b4855604-6ba5-4383-977c-1e6d7e1ed4a5",
+              "name": "title",
+              "value": "단기 기술적 분석",
+              "type": "string"
+            },
+            {
+              "id": "1c62331c-0a13-4d66-bfb2-56a5b0b2ed28",
+              "name": "종목 A",
+              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text) }}",
+              "type": "string"
+            },
+            {
+              "id": "fb0f3cd3-0d2f-42c7-ab8f-e688647fabf6",
+              "name": "reason",
+              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).reason }}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        272
+      ],
+      "id": "7e39d764-dcdb-47bb-ae99-afc258caf6d5",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=입력된 [기업명] 주가 데이터를 기반으로 상대강도지수(RSI)와 MACD 지표를 계산하고 분석해줘. 현재 주가가 과매수/과매도 영역에 있는지 판단하고, 모멘텀 추세를 기반으로 한 투자 전략 제시해줘\n.\\n\\n출력은 정확한 JSON 형식이어야 해. 예시는 아래와 같아:\\n\\n{\\\"score\\\": (0~100), \\\"reason\\\": (상세 분석 근거)}\\n\\n\n데이터는 아래와 같아:\n\n {{ $json.data }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        128,
+        496
+      ],
+      "id": "508acfaf-e5cb-4ba4-99ca-efba97e7a24a",
+      "name": "Message a model4",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "RnBSsXo7SgUymmKL",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b4855604-6ba5-4383-977c-1e6d7e1ed4a5",
+              "name": "title",
+              "value": "변동성 및 모멘텀 분석",
+              "type": "string"
+            },
+            {
+              "id": "1c62331c-0a13-4d66-bfb2-56a5b0b2ed28",
+              "name": "score",
+              "value": "={{JSON.parse ($json.candidates[0].content.parts[0].text).score }}",
+              "type": "string"
+            },
+            {
+              "id": "fb0f3cd3-0d2f-42c7-ab8f-e688647fabf6",
+              "name": "reason",
+              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).reason }}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        496
+      ],
+      "id": "1a7ba3cb-b71e-49d8-a970-f88f0c152f02",
+      "name": "Edit Fields3"
+    }
+  ],
+  "pinData": {
+    "Message a model": [
+      {
+        "json": {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\n\t\"score\": 78,\n\t\"reason\": \"최근 3개월간의 데이터를 종합적으로 분석한 결과, 해당 종목은 강력한 상승 모멘텀을 보여주고 있습니다.\\n\\n가격 추이 및 변동: 7월의 급격한 하락 이후 8월에 바닥을 다지는 기간을 거쳤습니다. 9월 중순부터 폭발적인 거래량을 동반한 급등세가 시작되었으며, 10월 들어서는 전고점을 돌파하며 상승세가 더욱 가속화되고 있습니다. 단기간에 주가가 2배 이상 상승하며 매우 높은 변동성을 보이고 있습니다.\\n\\n거래량 및 외국인 소진율: 가격 급등 시점에 거래량이 폭발적으로 증가(9/15: 1.17억 주, 10/15: 6500만 주)하여 상승 에너지의 강도를 입증하고 있습니다. 특히 주목할 점은 외국인 소진율의 급증입니다. 8월 1~2%대에 머물던 소진율은 10월 15일 9.85%까지 치솟으며, 이번 상승이 강력한 외국인 매수세에 의해 주도되고 있음을 명확히 보여줍니다.\\n\\n투자 전략 관점: 현재 주가는 강력한 상승 추세에 있으며, 대규모 거래량과 외국인 순매수가 이를 뒷받침하고 있어 추가 상승에 대한 기대감이 높습니다. 그러나 단기 급등에 따른 과열 신호와 극심한 변동성은 상당한 위험 요인입니다. 추격 매수는 급작스러운 조정 시 큰 손실로 이어질 수 있습니다. 따라서 신규 진입을 고려한다면, 상승 추세가 꺾이지 않는 것을 확인하며 눌림목 구간에서 분할 매수하는 전략이 유효합니다. 기존 보유자는 추세가 유지되는 한 보유 관점을 유지하되, 거래량이 급감하거나 급격한 가격 하락 시 분할 익절로 리스크를 관리할 필요가 있습니다.\"\n}"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 3971,
+            "candidatesTokenCount": 448,
+            "totalTokenCount": 7176,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 3971
+              }
+            ],
+            "thoughtsTokenCount": 2757
+          },
+          "modelVersion": "gemini-2.5-pro",
+          "responseId": "nez1aN2mINr7xN8PhM6HKQ"
+        }
+      }
+    ],
+    "Message a model1": [
+      {
+        "json": {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\n  \"score\": 25,\n  \"reason\": \"제공된 데이터를 종합적으로 분석한 결과, 향후 7일간의 주가 예측 신뢰도는 매우 낮다고 판단됩니다. 상세 분석 근거는 다음과 같습니다.\\n\\n1.  **데이터 특성 및 추세 분석**: 데이터는 약 4개월(100일 미만) 분량으로, 초기 하락 후 횡보하다가 9월 중순부터 폭발적인 상승 추세로 전환되었습니다. 특히 마지막 10거래일 동안 거래량이 급증하고 외국인 소진율이 2%대에서 9%대까지 치솟으며 주가가 50% 이상 급등했습니다. 이는 매우 강력한 상승 모멘텀을 의미하지만, 동시에 시장이 단기 과열 국면에 진입했을 가능성을 시사합니다.\\n\\n2.  **변동성 분석**: 일일 가격 변동폭과 수익률 표준편차가 최근 극도로 확대되었습니다. 이러한 높은 변동성은 예측의 불확실성을 크게 증가시키는 핵심 요인입니다. 현재 주가는 내재가치보다 수급과 투기적 심리에 의해 좌우될 가능성이 높아, 과거 데이터 패턴에 기반한 통계적 예측의 유효성이 떨어집니다.\\n\\n3.  **시계열 모델(ARIMA) 예측의 한계**: ARIMA 모델은 데이터의 정상성(stationarity)을 가정하며, 추세를 제거하기 위해 차분(differencing)을 사용합니다. 모델을 적용하면 최근의 강한 상승 추세를 따라 향후에도 점진적인 우상향을 예측할 가능성이 높습니다. 그러나 ARIMA는 선형 모델로서 최근과 같은 폭발적이고 비선형적인 가격 급등이나 급격한 추세 반전(조정)을 예측하는 데 근본적인 한계를 가집니다.\\n\\n4.  **딥러닝 모델(LSTM) 예측의 한계**: 비선형 관계 학습에 강점이 있는 LSTM은 이론적으로 더 나은 성능을 보일 수 있으나, 결정적인 약점이 있습니다. 100일 미만의 학습 데이터는 모델을 훈련시키기에 절대적으로 부족하며, 과적합(overfitting) 문제가 발생할 위험이 매우 높습니다. 즉, 모델이 장기적인 패턴을 학습하기보다 최근의 급등 현상만을 '암기'하여 비현실적인 상승을 계속 예측할 수 있어 신뢰하기 어렵습니다.\\n\\n5.  **종합 결론**: 기술적으로 강력한 상승 추세에 있으나, 각종 지표가 단기 과열을 나타내고 변동성이 극심하여 예측이 매우 어려운 '영역'에 있습니다. 통계 및 머신러닝 모델은 이러한 이례적인 시장 상황을 제대로 반영하지 못하므로, 예측 결과의 신뢰도를 매우 낮게 평가(25/100)합니다. 주가 방향은 예측보다 시장의 새로운 정보나 수급 변화에 따라 급변할 가능성이 높습니다.\"\n}"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 3998,
+            "candidatesTokenCount": 648,
+            "totalTokenCount": 7365,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 3998
+              }
+            ],
+            "thoughtsTokenCount": 2719
+          },
+          "modelVersion": "gemini-2.5-pro",
+          "responseId": "7eP1aOXEOpHgnsEP_cHUuQg"
+        }
+      }
+    ],
+    "Edit Fields": [
+      {
+        "json": {
+          "title": "종가 데이터 분석",
+          "score": "78",
+          "reason": "최근 3개월간의 데이터를 종합적으로 분석한 결과, 해당 종목은 강력한 상승 모멘텀을 보여주고 있습니다.\n\n가격 추이 및 변동: 7월의 급격한 하락 이후 8월에 바닥을 다지는 기간을 거쳤습니다. 9월 중순부터 폭발적인 거래량을 동반한 급등세가 시작되었으며, 10월 들어서는 전고점을 돌파하며 상승세가 더욱 가속화되고 있습니다. 단기간에 주가가 2배 이상 상승하며 매우 높은 변동성을 보이고 있습니다.\n\n거래량 및 외국인 소진율: 가격 급등 시점에 거래량이 폭발적으로 증가(9/15: 1.17억 주, 10/15: 6500만 주)하여 상승 에너지의 강도를 입증하고 있습니다. 특히 주목할 점은 외국인 소진율의 급증입니다. 8월 1~2%대에 머물던 소진율은 10월 15일 9.85%까지 치솟으며, 이번 상승이 강력한 외국인 매수세에 의해 주도되고 있음을 명확히 보여줍니다.\n\n투자 전략 관점: 현재 주가는 강력한 상승 추세에 있으며, 대규모 거래량과 외국인 순매수가 이를 뒷받침하고 있어 추가 상승에 대한 기대감이 높습니다. 그러나 단기 급등에 따른 과열 신호와 극심한 변동성은 상당한 위험 요인입니다. 추격 매수는 급작스러운 조정 시 큰 손실로 이어질 수 있습니다. 따라서 신규 진입을 고려한다면, 상승 추세가 꺾이지 않는 것을 확인하며 눌림목 구간에서 분할 매수하는 전략이 유효합니다. 기존 보유자는 추세가 유지되는 한 보유 관점을 유지하되, 거래량이 급감하거나 급격한 가격 하락 시 분할 익절로 리스크를 관리할 필요가 있습니다."
+        }
+      }
+    ],
+    "Edit Fields1": [
+      {
+        "json": {
+          "title": "시계열 모델 분석",
+          "score": "25",
+          "reason": "제공된 데이터를 종합적으로 분석한 결과, 향후 7일간의 주가 예측 신뢰도는 매우 낮다고 판단됩니다. 상세 분석 근거는 다음과 같습니다.\n\n1.  **데이터 특성 및 추세 분석**: 데이터는 약 4개월(100일 미만) 분량으로, 초기 하락 후 횡보하다가 9월 중순부터 폭발적인 상승 추세로 전환되었습니다. 특히 마지막 10거래일 동안 거래량이 급증하고 외국인 소진율이 2%대에서 9%대까지 치솟으며 주가가 50% 이상 급등했습니다. 이는 매우 강력한 상승 모멘텀을 의미하지만, 동시에 시장이 단기 과열 국면에 진입했을 가능성을 시사합니다.\n\n2.  **변동성 분석**: 일일 가격 변동폭과 수익률 표준편차가 최근 극도로 확대되었습니다. 이러한 높은 변동성은 예측의 불확실성을 크게 증가시키는 핵심 요인입니다. 현재 주가는 내재가치보다 수급과 투기적 심리에 의해 좌우될 가능성이 높아, 과거 데이터 패턴에 기반한 통계적 예측의 유효성이 떨어집니다.\n\n3.  **시계열 모델(ARIMA) 예측의 한계**: ARIMA 모델은 데이터의 정상성(stationarity)을 가정하며, 추세를 제거하기 위해 차분(differencing)을 사용합니다. 모델을 적용하면 최근의 강한 상승 추세를 따라 향후에도 점진적인 우상향을 예측할 가능성이 높습니다. 그러나 ARIMA는 선형 모델로서 최근과 같은 폭발적이고 비선형적인 가격 급등이나 급격한 추세 반전(조정)을 예측하는 데 근본적인 한계를 가집니다.\n\n4.  **딥러닝 모델(LSTM) 예측의 한계**: 비선형 관계 학습에 강점이 있는 LSTM은 이론적으로 더 나은 성능을 보일 수 있으나, 결정적인 약점이 있습니다. 100일 미만의 학습 데이터는 모델을 훈련시키기에 절대적으로 부족하며, 과적합(overfitting) 문제가 발생할 위험이 매우 높습니다. 즉, 모델이 장기적인 패턴을 학습하기보다 최근의 급등 현상만을 '암기'하여 비현실적인 상승을 계속 예측할 수 있어 신뢰하기 어렵습니다.\n\n5.  **종합 결론**: 기술적으로 강력한 상승 추세에 있으나, 각종 지표가 단기 과열을 나타내고 변동성이 극심하여 예측이 매우 어려운 '영역'에 있습니다. 통계 및 머신러닝 모델은 이러한 이례적인 시장 상황을 제대로 반영하지 못하므로, 예측 결과의 신뢰도를 매우 낮게 평가(25/100)합니다. 주가 방향은 예측보다 시장의 새로운 정보나 수급 변화에 따라 급변할 가능성이 높습니다.\n"
+        }
+      }
+    ],
+    "Aggregate": [
+      {
+        "json": {
+          "title": [
+            "종가 데이터 분석",
+            "시계열 모델 분석"
+          ],
+          "score": [
+            "78",
+            "25"
+          ],
+          "reason": [
+            "최근 3개월간의 데이터를 종합적으로 분석한 결과, 해당 종목은 강력한 상승 모멘텀을 보여주고 있습니다.\n\n가격 추이 및 변동: 7월의 급격한 하락 이후 8월에 바닥을 다지는 기간을 거쳤습니다. 9월 중순부터 폭발적인 거래량을 동반한 급등세가 시작되었으며, 10월 들어서는 전고점을 돌파하며 상승세가 더욱 가속화되고 있습니다. 단기간에 주가가 2배 이상 상승하며 매우 높은 변동성을 보이고 있습니다.\n\n거래량 및 외국인 소진율: 가격 급등 시점에 거래량이 폭발적으로 증가(9/15: 1.17억 주, 10/15: 6500만 주)하여 상승 에너지의 강도를 입증하고 있습니다. 특히 주목할 점은 외국인 소진율의 급증입니다. 8월 1~2%대에 머물던 소진율은 10월 15일 9.85%까지 치솟으며, 이번 상승이 강력한 외국인 매수세에 의해 주도되고 있음을 명확히 보여줍니다.\n\n투자 전략 관점: 현재 주가는 강력한 상승 추세에 있으며, 대규모 거래량과 외국인 순매수가 이를 뒷받침하고 있어 추가 상승에 대한 기대감이 높습니다. 그러나 단기 급등에 따른 과열 신호와 극심한 변동성은 상당한 위험 요인입니다. 추격 매수는 급작스러운 조정 시 큰 손실로 이어질 수 있습니다. 따라서 신규 진입을 고려한다면, 상승 추세가 꺾이지 않는 것을 확인하며 눌림목 구간에서 분할 매수하는 전략이 유효합니다. 기존 보유자는 추세가 유지되는 한 보유 관점을 유지하되, 거래량이 급감하거나 급격한 가격 하락 시 분할 익절로 리스크를 관리할 필요가 있습니다.",
+            "제공된 데이터를 종합적으로 분석한 결과, 향후 7일간의 주가 예측 신뢰도는 매우 낮다고 판단됩니다. 상세 분석 근거는 다음과 같습니다.\n\n1.  **데이터 특성 및 추세 분석**: 데이터는 약 4개월(100일 미만) 분량으로, 초기 하락 후 횡보하다가 9월 중순부터 폭발적인 상승 추세로 전환되었습니다. 특히 마지막 10거래일 동안 거래량이 급증하고 외국인 소진율이 2%대에서 9%대까지 치솟으며 주가가 50% 이상 급등했습니다. 이는 매우 강력한 상승 모멘텀을 의미하지만, 동시에 시장이 단기 과열 국면에 진입했을 가능성을 시사합니다.\n\n2.  **변동성 분석**: 일일 가격 변동폭과 수익률 표준편차가 최근 극도로 확대되었습니다. 이러한 높은 변동성은 예측의 불확실성을 크게 증가시키는 핵심 요인입니다. 현재 주가는 내재가치보다 수급과 투기적 심리에 의해 좌우될 가능성이 높아, 과거 데이터 패턴에 기반한 통계적 예측의 유효성이 떨어집니다.\n\n3.  **시계열 모델(ARIMA) 예측의 한계**: ARIMA 모델은 데이터의 정상성(stationarity)을 가정하며, 추세를 제거하기 위해 차분(differencing)을 사용합니다. 모델을 적용하면 최근의 강한 상승 추세를 따라 향후에도 점진적인 우상향을 예측할 가능성이 높습니다. 그러나 ARIMA는 선형 모델로서 최근과 같은 폭발적이고 비선형적인 가격 급등이나 급격한 추세 반전(조정)을 예측하는 데 근본적인 한계를 가집니다.\n\n4.  **딥러닝 모델(LSTM) 예측의 한계**: 비선형 관계 학습에 강점이 있는 LSTM은 이론적으로 더 나은 성능을 보일 수 있으나, 결정적인 약점이 있습니다. 100일 미만의 학습 데이터는 모델을 훈련시키기에 절대적으로 부족하며, 과적합(overfitting) 문제가 발생할 위험이 매우 높습니다. 즉, 모델이 장기적인 패턴을 학습하기보다 최근의 급등 현상만을 '암기'하여 비현실적인 상승을 계속 예측할 수 있어 신뢰하기 어렵습니다.\n\n5.  **종합 결론**: 기술적으로 강력한 상승 추세에 있으나, 각종 지표가 단기 과열을 나타내고 변동성이 극심하여 예측이 매우 어려운 '영역'에 있습니다. 통계 및 머신러닝 모델은 이러한 이례적인 시장 상황을 제대로 반영하지 못하므로, 예측 결과의 신뢰도를 매우 낮게 평가(25/100)합니다. 주가 방향은 예측보다 시장의 새로운 정보나 수급 변화에 따라 급변할 가능성이 높습니다.\n"
+          ]
+        }
+      }
+    ],
+    "Message a model4": [
+      {
+        "json": {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\n\t\"score\": 45,\n\t\"reason\": \"최신 데이터 기준, 상대강도지수(RSI)는 약 84.70으로 계산되어 과매수 기준선인 70을 크게 상회합니다. 이는 주가가 단기간에 급등하여 시장이 과열되었으며, 향후 가격 조정의 가능성이 높다는 강력한 경고 신호입니다. 반면, 이동평균수렴확산지수(MACD)는 440.38로 시그널선(323.75) 위에 위치하며 격차가 벌어지고 있어, 매우 강력한 상승 모멘텀이 지속되고 있음을 보여줍니다. 종합적으로, 현재 주가는 강력한 상승 추세에 있으나 단기 과열 부담이 매우 큰 상태입니다. 따라서 신규 매수 진입은 높은 변동성 리스크로 인해 보수적인 접근이 필요하며, 기존 보유자는 상승 추세를 따르되 분할 매도를 통해 수익을 실현하거나 조정에 대비한 리스크 관리를 고려해야 할 시점입니다.\"\n}"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 3983,
+            "candidatesTokenCount": 236,
+            "totalTokenCount": 11995,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 3983
+              }
+            ],
+            "thoughtsTokenCount": 7776
+          },
+          "modelVersion": "gemini-2.5-pro",
+          "responseId": "Wfn1aKnfL46FvdIPiaCD-QI"
+        }
+      }
+    ],
+    "Edit Fields3": [
+      {
+        "json": {
+          "title": "변동성 및 모멘텀 분석",
+          "score": "45",
+          "reason": "최신 데이터 기준, 상대강도지수(RSI)는 약 84.70으로 계산되어 과매수 기준선인 70을 크게 상회합니다. 이는 주가가 단기간에 급등하여 시장이 과열되었으며, 향후 가격 조정의 가능성이 높다는 강력한 경고 신호입니다. 반면, 이동평균수렴확산지수(MACD)는 440.38로 시그널선(323.75) 위에 위치하며 격차가 벌어지고 있어, 매우 강력한 상승 모멘텀이 지속되고 있음을 보여줍니다. 종합적으로, 현재 주가는 강력한 상승 추세에 있으나 단기 과열 부담이 매우 큰 상태입니다. 따라서 신규 매수 진입은 높은 변동성 리스크로 인해 보수적인 접근이 필요하며, 기존 보유자는 상승 추세를 따르되 분할 매도를 통해 수익을 실현하거나 조정에 대비한 리스크 관리를 고려해야 할 시점입니다.\n"
+        }
+      }
+    ],
+    "Message a model3": [
+      {
+        "json": {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\n  \"score\": 90,\n  \"reason\": \"최근 5일 이동평균선(약 4039)이 20일 이동평균선(약 3580)을 큰 폭으로 상회하는 강력한 정배열 상태로, 두 이평선 간의 이격도가 확대되며 상승 추세가 가속화되고 있습니다. 특히 최근 주가 급등이 이전과는 비교할 수 없는 폭발적인 거래량(최근 거래일 7,463만 주, 5일 평균 4,802만 주)을 동반하고 있어, 이는 매우 강력한 매수세가 유입되고 있음을 의미합니다. 이러한 강력한 상승 모멘텀을 고려할 때, 단기적인 조정 가능성에도 불구하고 향후 5일간 주가는 상승 추세를 이어갈 확률이 매우 높습니다.\"\n}"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 4005,
+            "candidatesTokenCount": 194,
+            "totalTokenCount": 8140,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4005
+              }
+            ],
+            "thoughtsTokenCount": 3941
+          },
+          "modelVersion": "gemini-2.5-pro",
+          "responseId": "zfn1aIyPKY_zxN8P7IyLsA8"
+        }
+      }
+    ],
+    "Edit Fields2": [
+      {
+        "json": {
+          "title": "단기 기술적 분석",
+          "종목 A": "{\"score\":90,\"reason\":\"최근 5일 이동평균선(약 4039)이 20일 이동평균선(약 3580)을 큰 폭으로 상회하는 강력한 정배열 상태로, 두 이평선 간의 이격도가 확대되며 상승 추세가 가속화되고 있습니다. 특히 최근 주가 급등이 이전과는 비교할 수 없는 폭발적인 거래량(최근 거래일 7,463만 주, 5일 평균 4,802만 주)을 동반하고 있어, 이는 매우 강력한 매수세가 유입되고 있음을 의미합니다. 이러한 강력한 상승 모멘텀을 고려할 때, 단기적인 조정 가능성에도 불구하고 향후 5일간 주가는 상승 추세를 이어갈 확률이 매우 높습니다.\"}",
+          "reason": "최근 5일 이동평균선(약 4039)이 20일 이동평균선(약 3580)을 큰 폭으로 상회하는 강력한 정배열 상태로, 두 이평선 간의 이격도가 확대되며 상승 추세가 가속화되고 있습니다. 특히 최근 주가 급등이 이전과는 비교할 수 없는 폭발적인 거래량(최근 거래일 7,463만 주, 5일 평균 4,802만 주)을 동반하고 있어, 이는 매우 강력한 매수세가 유입되고 있음을 의미합니다. 이러한 강력한 상승 모멘텀을 고려할 때, 단기적인 조정 가능성에도 불구하고 향후 5일간 주가는 상승 추세를 이어갈 확률이 매우 높습니다.\n"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Message a model3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Message a model4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Message a model2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Message a model4": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0200fbf8-9c66-4d66-9f71-594954629f5a",
+  "meta": {
+    "instanceId": "184d2d55d2d2bf6864162501b6da1092d25bfc6022df0879a535c0e84bdbce32"
+  },
+  "id": "ady9eUlsNecke98g",
+  "tags": []
+}

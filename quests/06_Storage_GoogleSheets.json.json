@@ -337,7 +337,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        640,
+        688,
         304
       ],
       "id": "3c0e6c16-beeb-4317-9f3d-2a22c20f3e24",
@@ -455,6 +455,28 @@
         "googlePalmApi": {
           "id": "RnBSsXo7SgUymmKL",
           "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8221322842",
+        "text": "=뉴스명 : {{ $('Edit Fields1').item.json[\"뉴스명\"] }}\n링크 : {{ $('Edit Fields1').item.json['링크'] }}\n문장 요약 : {{ $('Edit Fields1').item.json['문장 요약'] }}\n한줄평 : {{ $('Edit Fields1').item.json['한줄평'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        304
+      ],
+      "id": "9be47a68-52e6-40a5-84df-f0b33d2c4ed9",
+      "name": "Send a text message",
+      "webhookId": "126bac45-2103-4ab2-9ad1-11ffe567bddc",
+      "credentials": {
+        "telegramApi": {
+          "id": "KsGeR3zEu5LdJusP",
+          "name": "Telegram account"
         }
       }
     }
@@ -2525,6 +2547,11 @@
       "main": [
         [
           {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          },
+          {
             "node": "Get row(s) in sheet",
             "type": "main",
             "index": 0
@@ -2564,13 +2591,18 @@
           }
         ]
       ]
+    },
+    "Send a message1": {
+      "main": [
+        []
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "2f330bb5-89de-4f10-9757-48410488e569",
+  "versionId": "d64cc69f-19cf-4d7c-9216-ea7a1a399bc9",
   "meta": {
     "instanceId": "184d2d55d2d2bf6864162501b6da1092d25bfc6022df0879a535c0e84bdbce32"
   },

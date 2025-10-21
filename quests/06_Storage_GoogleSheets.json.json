@@ -1,0 +1,2579 @@
+{
+  "name": "06_Storage_GoogleSheets.json",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "뉴스 ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "RSS 뉴스",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1672cfdf-e7b4-4467-9737-f240f1acaac1",
+      "name": "On form submission",
+      "webhookId": "996b6e5b-17e3-450e-b9d8-11a5c97c9c02"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json[\"RSS 뉴스\"] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ddb5edd4-e1ba-4a21-83ca-b4d610a175a6",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "883eb337-f989-498c-b496-52b5c7e32842",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=아래 정보를 기반으로 뉴스를 간단하게 요약하고 한줄평을 써줘 \n {{ $json.link }}\n\nOUTPUT \n\n뉴스명 : {{ $json.title }}\n링크 : {{ $json.link }}\n문장 요약 : \n한줄평 : "
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        880,
+        0
+      ],
+      "id": "429ce8af-9c0e-4a65-ace3-4b5f9e498a8c",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "RnBSsXo7SgUymmKL",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7389d4de-f850-4eb8-9f96-c755f069d6b8",
+              "name": "text",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        304
+      ],
+      "id": "e9ccd579-b839-40c7-916f-0fa96c859418",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "93b13991-3a65-4354-91b8-8b9071190401",
+              "name": "뉴스명",
+              "value": "={{ $json.text[\"뉴스명\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "afab4645-8973-4541-bf28-d536c9103fb2",
+              "name": "링크",
+              "value": "={{ $json.text[\"링크\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "8517c5b9-92f1-43d7-b7db-c2ce224691a9",
+              "name": "문장 요약",
+              "value": "={{ $json.text[\"문장 요약\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "2b981eae-4b99-4477-b4f5-415ce774bac2",
+              "name": "한줄평",
+              "value": "={{ $json.text[\"한줄평\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        304
+      ],
+      "id": "3024e17c-248a-4f8e-ac65-16133a233f26",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1LFFfazFoRvX6Nv70t9WlWwknw6PGH9C6nBic7WHPgik",
+          "mode": "list",
+          "cachedResultName": "IT_news_202510의 사본",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LFFfazFoRvX6Nv70t9WlWwknw6PGH9C6nBic7WHPgik/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Templates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LFFfazFoRvX6Nv70t9WlWwknw6PGH9C6nBic7WHPgik/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "문장 요약": "={{ $json['문장 요약'] }}",
+            "한 줄평": "={{ $json['한줄평'] }}",
+            "링크": "={{ $json[\"링크\"] }}"
+          },
+          "matchingColumns": [
+            "링크"
+          ],
+          "schema": [
+            {
+              "id": "뉴스명",
+              "displayName": "뉴스명",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "링크",
+              "displayName": "링크",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "문장 요약",
+              "displayName": "문장 요약",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "한 줄평",
+              "displayName": "한 줄평",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        304
+      ],
+      "id": "e751f36e-d786-4467-9a10-e8f55a65a60d",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8JpqMFGxzsO3qlhA",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1LFFfazFoRvX6Nv70t9WlWwknw6PGH9C6nBic7WHPgik",
+          "mode": "list",
+          "cachedResultName": "IT_news_202510의 사본",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LFFfazFoRvX6Nv70t9WlWwknw6PGH9C6nBic7WHPgik/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Templates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LFFfazFoRvX6Nv70t9WlWwknw6PGH9C6nBic7WHPgik/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "뉴스명": "={{ $json.title }}",
+            "링크": "={{ $json.link }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "뉴스명",
+              "displayName": "뉴스명",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "링크",
+              "displayName": "링크",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "문장 요약",
+              "displayName": "문장 요약",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "한 줄평",
+              "displayName": "한 줄평",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        0
+      ],
+      "id": "5342ff6b-5978-477c-a05b-61a0894adb9f",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8JpqMFGxzsO3qlhA",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "rlacksdud1114@gmail.com",
+        "subject": "테스트] 왜안됨",
+        "message": "={{ $('Edit Fields1').item.json['뉴스명'] }}\n{{ $('Edit Fields1').item.json['링크'] }}\n{{ $('Edit Fields1').item.json['문장 요약'] }}\n{{ $('Edit Fields1').item.json['한줄평'] }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        640,
+        304
+      ],
+      "id": "3c0e6c16-beeb-4317-9f3d-2a22c20f3e24",
+      "name": "Send a message",
+      "webhookId": "dbf1e3e8-94b8-4051-9bb7-5183f601bd46",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "pAOuWgAII4OHUZjy",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15PSi6M5ssF-wcTMlC5ifEzl42g7iFld8CxvGtQasJdI",
+          "mode": "list",
+          "cachedResultName": "Member_informations",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15PSi6M5ssF-wcTMlC5ifEzl42g7iFld8CxvGtQasJdI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15PSi6M5ssF-wcTMlC5ifEzl42g7iFld8CxvGtQasJdI/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        64,
+        560
+      ],
+      "id": "3e84925d-db86-4375-a6d4-18e0877c8ddc",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8JpqMFGxzsO3qlhA",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "google Email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        272,
+        560
+      ],
+      "id": "b170d77b-9b7f-4cd5-8332-82ae07521e5e",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.content.parts[0].text }}",
+        "subject": "테스트] 06_Storage_GoogleSheets.json",
+        "message": "=뉴스명 : {{ $('Edit Fields1').item.json[\"뉴스명\"] }}\n링크 : {{ $('Edit Fields1').item.json[\"링크\"] }}\n문장 요약 : {{ $('Edit Fields1').item.json[\"문장 요약\"] }}\n한줄평 : {{ $('Edit Fields1').item.json[\"한줄평\"] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        976,
+        560
+      ],
+      "id": "36418bb8-1309-4d0f-a66d-8fd48d50f5b3",
+      "name": "Send a message1",
+      "webhookId": "59e0c48a-2a84-4734-b0fd-076b59bf87cb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "pAOuWgAII4OHUZjy",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json[\"google Email\"] }}\n\n대답은 하지말고 , 이메일 보낼 수 있게 이메일 주소를 , 로 연결해줘"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        480,
+        560
+      ],
+      "id": "b1e80b13-7b51-4f71-a8a7-fb4f47362eda",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "RnBSsXo7SgUymmKL",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "RSS 뉴스": "https://news.sbs.co.kr/news/headlineRssFeed.do",
+          "submittedAt": "2025-10-21T16:18:37.932+09:00",
+          "formMode": "test"
+        }
+      }
+    ],
+    "RSS Read": [
+      {
+        "json": {
+          "creator": "blue@sbs.co.kr(강청완)",
+          "title": "이 대통령 \"투기 수요 철저히 억제…가용 정책 수단 집중 투입\"",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008300068",
+          "pubDate": "Tue, 21 Oct 2025 14:53:00 +0900",
+          "author": "blue@sbs.co.kr(강청완)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008300068&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t<img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120575_700.jpg\" width=\"700\">\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--subsub0--><p class='change strongtag'><strong>▲ 이재명 대통령이 21일 용산 대통령실에서 열린 국무회의에서 발언하고 있다.</strong></p>\n<!--3--><p class='change'> 이재명 대통령이 정부 부처에 \"국민경제를 왜곡하는 투기 차단에 총력을 기울여 달라\"고 말했습니다.</p>\n<!--7--><p class='change'> 이 대통령은 서울 용산 대통령실에서 주재한 국무회의에서 \"가용한 정책 수단을 집중 투입해 경고등이 켜진 비생산적 투기 수요를 철저히 억제해야 한다\"며 이같이 주문했습니다.</p>\n<!--11--><p class='change'> 서울을 중심으로 주택 수요 압력이 거세지는 가운데 투기성 자금이 과도하게 부동산 시장으로 몰려드는 흐름이 이어진다면 집값 상승세가 걷잡을 수 없이 가팔라질 수 있는 만큼 강력한 대책이 필요한 시점이라는 메시지로 풀이됩니다.</p>\n<!--15--><p class='change'> 이 대통령은 \"어제 코스피 지수가 사상 최초로 3800선을 넘어섰고 오늘도 사상 최고가를 경신하고 있다. 정상화 흐름을 타고 원래 있어야 할 자리로 돌아가는 중\"이라며 \"비생산적 분야에 집중됐던 과거의 투자 방식에서 벗어나 국민의 자산 증식 수단이 다양화되는 과정\"이라고 설명했습니다.</p>\n<!--19--><p class='change'> 그러면서 \"이처럼 생산적 금융으로 전환되는 추세가 더 굳건히 뿌리내리려면 일관되고 실효성 있는 정책을 통해 우리 사회 전체의 인식을 바꿔야 한다\"며 이를 위해 투기수요 차단 대책이 시급하다고 거듭 강조했습니다.</p>\n<!--23--><p class='change'> (사진=대통령실통신사진기자단, 연합뉴스)</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008300068&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n▲ 이재명 대통령이 21일 용산 대통령실에서 열린 국무회의에서 발언하고 있다.\n 이재명 대통령이 정부 부처에 \"국민경제를 왜곡하는 투기 차단에 총력을 기울여 달라\"고 말했습니다.\n 이 대통령은 서울 용산 대통령실에서 주재한 국무회의에서 \"가용한 정책 수단을 집중 투입해 경고등이 켜진 비생산적 투기 수요를 철저히 억제해야 한다\"며 이같이 주문했습니다.\n 서울을 중심으로 주택 수요 압력이 거세지는 가운데 투기성 자금이 과도하게 부동산 시장으로 몰려드는 흐름이 이어진다면 집값 상승세가 걷잡을 수 없이 가팔라질 수 있는 만큼 강력한 대책이 필요한 시점이라는 메시지로 풀이됩니다.\n 이 대통령은 \"어제 코스피 지수가 사상 최초로 3800선을 넘어섰고 오늘도 사상 최고가를 경신하고 있다. 정상화 흐름을 타고 원래 있어야 할 자리로 돌아가는 중\"이라며 \"비생산적 분야에 집중됐던 과거의 투자 방식에서 벗어나 국민의 자산 증식 수단이 다양화되는 과정\"이라고 설명했습니다.\n 그러면서 \"이처럼 생산적 금융으로 전환되는 추세가 더 굳건히 뿌리내리려면 일관되고 실효성 있는 정책을 통해 우리 사회 전체의 인식을 바꿔야 한다\"며 이를 위해 투기수요 차단 대책이 시급하다고 거듭 강조했습니다.\n (사진=대통령실통신사진기자단, 연합뉴스)\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120575_1280.jpg",
+            "type": "image/jpeg",
+            "length": "510578"
+          },
+          "content": "&#9650; 이재명 대통령이 21일 용산 대통령실에서 열린 국무회의에서 발언하고 있다.이재명 대통령이 정부 부처에 &#34;국민경제를 왜곡하는…",
+          "contentSnippet": "▲ 이재명 대통령이 21일 용산 대통령실에서 열린 국무회의에서 발언하고 있다.이재명 대통령이 정부 부처에 \"국민경제를 왜곡하는…",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008300068",
+          "categories": [
+            {
+              "_": "정치",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=01"
+              }
+            },
+            {
+              "_": "POLITICS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=01"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "대통령",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%8C%80%ED%86%B5%EB%A0%B9"
+              }
+            },
+            {
+              "_": "투기",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%88%AC%EA%B8%B0"
+              }
+            },
+            {
+              "_": "수단",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%88%98%EB%8B%A8"
+              }
+            },
+            {
+              "_": "이재명",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%9D%B4%EC%9E%AC%EB%AA%85"
+              }
+            },
+            {
+              "_": "서울",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%84%9C%EC%9A%B8"
+              }
+            },
+            {
+              "_": "투자",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%88%AC%EC%9E%90"
+              }
+            },
+            {
+              "_": "시장",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%8B%9C%EC%9E%A5"
+              }
+            },
+            {
+              "_": "경제",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B2%BD%EC%A0%9C"
+              }
+            }
+          ],
+          "isoDate": "2025-10-21T05:53:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "hogeni@sbs.co.kr(이호건)",
+          "title": "\"우린 한국에서 당해도 공개 안 했는데\"…캄보디아, 서운함 표출 [자막뉴스]",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299576",
+          "pubDate": "Tue, 21 Oct 2025 15:20:00 +0900",
+          "author": "hogeni@sbs.co.kr(이호건)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299576&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t지난 15일 캄보디아 현지를 방문한 정부 합동대응팀은 방문 첫날 훈 마네트 총리, 써소카 부총리 등 캄보디아 정부 최고위직을 만나 구금된 한국인…\r\n\t\t\t\t\t\t\t<iframe width=\"640\" height=\"360\" src=\"https://news.sbs.co.kr/news/newsPlayerIframe.do?news_id=N1008299576&type=NEWS&plink=RSS\" frameborder=\"0\" scrolling=\"no\"><img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120523_700.jpg\" width=\"700\"></iframe><p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299576&amp;plink=PLAY&amp;cooper=RSS&amp;autoplay=Y\">▶ 영상 시청</a></p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><p class='change'>지난 15일 캄보디아 현지를 방문한 정부 합동대응팀은 방문 첫날 훈 마네트 총리, 써소카 부총리 등 캄보디아 정부 최고위직을 만나 구금된 한국인들에 대한 조기 송환을 요청했습니다.</p>\n<!--4--><p class='change'> 그런데 그 면담 자리에서 캄보디아 정부 고위 관계자가 우리나라에 대한 서운함을 드러낸 거로 확인됐습니다.</p>\n<!--8--><p class='change'> 대응팀에 따르면 한 캄보디아 고위 인사는 \"양국 국민간 국제결혼도 많아서 한국을 사돈의 나라로 생각한다\"며, \"한국에서 캄보디아인을 상대로 범죄가 발생해도 양국 관계의 중요성을 생각해 외부에 잘 공개하지 않아 왔다\"고 말한 거로 전해졌습니다.</p>\n<!--12--><p class='change'> 이번 사태에 대해 캄보디아를 비판하는 한국 정부와 언론에 서운함을 드러낸 셈입니다.</p>\n<!--16--><p class='change'> 이 고위인사는 또 \"중국인에 의한 한국인 상대 범죄 피해는 사실 캄보디아 입장에선 '외국인 간 범죄'지만, 자신들은 적극적으로 대응하고 신속하게 검거했는데, 왜 우리가 가장 큰 비난을 받아야 하냐\"며 적극 해명한 거로 전해졌습니다.</p>\n<!--20--><p class='change'> 대응팀 관계자는 캄보디아측이 이 문제를 심각하게 받아들이고 있다는 걸 우리측에 1시간 넘게 자세히 설명했다고 전했습니다.</p>\n<!--24--><p class='change'> 방문 일정 마지막날인 지난 18일 구금된 한국인 64명 송환 과정에서도 캄보디아측의 최고 책임자와 정복을 입은 인원 100여 명이 도열해 송환 과정을 관리하는 등 적극적인 지원이 있었는데, 다만 캄보디아 정부는 현지 한인 사건을 전담하는 양국 경찰 수사공조 조직인 코리안데스크 설치 요청은 끝내 받아들이지 않았습니다.</p>\n<!--28--><p class='change'> 양국 정부는 대신 한-캄보디아 합동대응 태스크포스를 구성해 범죄 연루자 송환을 위한 정보 교환을 진행하기로 합의했습니다.</p>\n<!--32--><p class='change'> 캄보디아측이 코리안데스크 설치를 반대한 건 한국에서 난민 지위를 신청한 자국 반정부 인사 송환을 우리 정부가 거부한 데 대한 조치라는 해석입니다.</p>\n<!--36--><p class='change'> (구성 : 이호건 / 영상편집 : 김나온 / 디자인 : 이수민 / 제작 : 디지털뉴스편집부)</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299576&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t지난 15일 캄보디아 현지를 방문한 정부 합동대응팀은 방문 첫날 훈 마네트 총리, 써소카 부총리 등 캄보디아 정부 최고위직을 만나 구금된 한국인…\r\n\t\t\t\t\t\t\t\n▶ 영상 시청\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n지난 15일 캄보디아 현지를 방문한 정부 합동대응팀은 방문 첫날 훈 마네트 총리, 써소카 부총리 등 캄보디아 정부 최고위직을 만나 구금된 한국인들에 대한 조기 송환을 요청했습니다.\n 그런데 그 면담 자리에서 캄보디아 정부 고위 관계자가 우리나라에 대한 서운함을 드러낸 거로 확인됐습니다.\n 대응팀에 따르면 한 캄보디아 고위 인사는 \"양국 국민간 국제결혼도 많아서 한국을 사돈의 나라로 생각한다\"며, \"한국에서 캄보디아인을 상대로 범죄가 발생해도 양국 관계의 중요성을 생각해 외부에 잘 공개하지 않아 왔다\"고 말한 거로 전해졌습니다.\n 이번 사태에 대해 캄보디아를 비판하는 한국 정부와 언론에 서운함을 드러낸 셈입니다.\n 이 고위인사는 또 \"중국인에 의한 한국인 상대 범죄 피해는 사실 캄보디아 입장에선 '외국인 간 범죄'지만, 자신들은 적극적으로 대응하고 신속하게 검거했는데, 왜 우리가 가장 큰 비난을 받아야 하냐\"며 적극 해명한 거로 전해졌습니다.\n 대응팀 관계자는 캄보디아측이 이 문제를 심각하게 받아들이고 있다는 걸 우리측에 1시간 넘게 자세히 설명했다고 전했습니다.\n 방문 일정 마지막날인 지난 18일 구금된 한국인 64명 송환 과정에서도 캄보디아측의 최고 책임자와 정복을 입은 인원 100여 명이 도열해 송환 과정을 관리하는 등 적극적인 지원이 있었는데, 다만 캄보디아 정부는 현지 한인 사건을 전담하는 양국 경찰 수사공조 조직인 코리안데스크 설치 요청은 끝내 받아들이지 않았습니다.\n 양국 정부는 대신 한-캄보디아 합동대응 태스크포스를 구성해 범죄 연루자 송환을 위한 정보 교환을 진행하기로 합의했습니다.\n 캄보디아측이 코리안데스크 설치를 반대한 건 한국에서 난민 지위를 신청한 자국 반정부 인사 송환을 우리 정부가 거부한 데 대한 조치라는 해석입니다.\n (구성 : 이호건 / 영상편집 : 김나온 / 디자인 : 이수민 / 제작 : 디지털뉴스편집부)\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120523_1280.jpg",
+            "type": "image/jpeg",
+            "length": "550968"
+          },
+          "content": "지난 15일 캄보디아 현지를 방문한 정부 합동대응팀은 방문 첫날 훈 마네트 총리, 써소카 부총리 등 캄보디아 정부 최고위직을 만나 구금된 한국인…",
+          "contentSnippet": "지난 15일 캄보디아 현지를 방문한 정부 합동대응팀은 방문 첫날 훈 마네트 총리, 써소카 부총리 등 캄보디아 정부 최고위직을 만나 구금된 한국인…",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299576",
+          "categories": [
+            {
+              "_": "정치",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=01"
+              }
+            },
+            {
+              "_": "POLITICS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=01"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "한국",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%95%9C%EA%B5%AD"
+              }
+            },
+            {
+              "_": "캄보디아",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%BA%84%EB%B3%B4%EB%94%94%EC%95%84"
+              }
+            },
+            {
+              "_": "총리",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%B4%9D%EB%A6%AC"
+              }
+            },
+            {
+              "_": "경찰",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B2%BD%EC%B0%B0"
+              }
+            },
+            {
+              "_": "정부",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%A0%95%EB%B6%80"
+              }
+            },
+            {
+              "_": "우린",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%9A%B0%EB%A6%B0"
+              }
+            },
+            {
+              "_": "송환",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%86%A1%ED%99%98"
+              }
+            },
+            {
+              "_": "캄보디아 사태",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsHotIssueList.do?tagId=10000060173"
+              }
+            },
+            {
+              "_": "뉴스영상",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsPlusList.do?themeId=10000000121"
+              }
+            }
+          ],
+          "isoDate": "2025-10-21T06:20:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "newsservice@sbs.co.kr(김성화)",
+          "title": "사라진 '승리 그 클럽', 사라진 '돼지 도살자'…기막힌 타이밍 [자막뉴스]",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299930",
+          "pubDate": "Tue, 21 Oct 2025 15:50:00 +0900",
+          "author": "newsservice@sbs.co.kr(김성화)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299930&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t캄보디아 범죄 배후로 지목된 프린스 그룹에 대한 제재가 시작된 후, 빅뱅 출신 승리가 방문해 논란이 됐던 현지 클럽도 문을 닫은 것으로 확인됐습…\r\n\t\t\t\t\t\t\t<iframe width=\"640\" height=\"360\" src=\"https://news.sbs.co.kr/news/newsPlayerIframe.do?news_id=N1008299930&type=NEWS&plink=RSS\" frameborder=\"0\" scrolling=\"no\"><img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120580_700.jpg\" width=\"700\"></iframe><p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299930&amp;plink=PLAY&amp;cooper=RSS&amp;autoplay=Y\">▶ 영상 시청</a></p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><p class='change'>캄보디아 범죄 배후로 지목된 프린스 그룹에 대한 제재가 시작된 후, 빅뱅 출신 승리가 방문해 논란이 됐던 현지 클럽도 문을 닫은 것으로 확인됐습니다.</p>\n<!--4--><p class='change'> 오늘(21일) CBS 보도에 따르면 프린스 그룹이 운영한 것으로 알려진 클럽 겸 펍 '프린스 브루잉'은 최근 폐업했으며 현재는 새 사장이 인수해 재오픈을 준비 중인 것으로 알려졌습니다.</p>\n<!--8--><p class='change'> 해당 클럽은 지난해 승리의 방문 모습을 담은 영상으로 화제가 된 곳입니다.</p>\n<!--12--><p class='change'> 당시 승리는 무대에 올라 \"내가 지인들한테 캄보디아에 간다고 했더니 위험하지 않냐고, 잘 사는 국가도 아닌데 왜 가느냐고 하더라\"고 말했습니다.</p>\n<!--16--><p class='change'> 그러면서 \"닥치고 여기 와서 캄보디아가 어떤 나라인지 보라고 말할 거다. 아시아에서 가장 훌륭한 국가인 캄보디아를 말이다\"라고 덧붙였습니다.</p>\n<!--20--><p class='change'> 또 \"이 자리에 언젠가 지드래곤을 데려오겠다\"는 말까지 해 빈축을 사기도 했습니다.</p>\n<!--24--><p class='change'> 당시에도 논란이 된 이 영상은 최근 캄보디아 납치 감금 사태가 불거지자 온라인 상에서 다시 주목을 받고 있습니다.</p>\n<!--28--><p class='change'> 다만 승리와 프린스 브루잉, 프린스 홀딩 그룹 간의 직접적인 연관성은 아직까지 확인되지 않았습니다.</p>\n<!--32--><p class='change'> 1987년생인 중국계 천즈 회장이 이끄는 프린스 그룹은 금융과 부동산 등으로 캄보디아 내에서 막대한 돈을 벌어들인 거로 전해졌습니다.</p>\n<!--36--><p class='change'> 하지만 인신매매, 온라인 사기, 불법 감금 등 캄보디아 내 여러 범죄 단지의 실질적인 운영자로 지목돼 미국과 영국 정부는 프린스 그룹과 천 회장에 대해 공동 제재에 착수했습니다.</p>\n<!--40--><p class='change'> 미국 법무부는 프린스 그룹에 대한 140여 건의 제재와 함께 천 회장을 강제 노동 수용소 운영과 대규모 암호화폐 사기 기획 혐의로 고소했습니다.</p>\n<!--44--><p class='change'> 영국 정부도 천 회장이 소유한 런던 부동산 자산을 동결하고 영국 금융 시스템 이용을 금지했습니다.</p>\n<!--48--><p class='change'> 이후 캄보디아 현지에선 프린스 그룹 본사 간판이 철거되는 모습이 포착돼 이들이 흔적 지우기에 나선 것 아니냐는 분석도 나오고 있습니다.</p>\n<!--52--><p class='change'> '돼지 도살자(Pig Butcher)'로 불리는 천 회장은 캄보디아에서 절대 권력을 누리고 있는 훈 센 전 총리 일가와 친분이 두터운 것으로 알려졌는데, 지난 14일 미국과 영국의 제재 발표 이후 돌연 종적을 감춰 행방이 묘연한 상태입니다.</p>\n<!--56--><p class='change'> (기획 : 김성화 / 영상편집 : 김나온 / 화면 출처 : 유튜브 / 제작 : 디지털뉴스편집부)</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299930&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t캄보디아 범죄 배후로 지목된 프린스 그룹에 대한 제재가 시작된 후, 빅뱅 출신 승리가 방문해 논란이 됐던 현지 클럽도 문을 닫은 것으로 확인됐습…\r\n\t\t\t\t\t\t\t\n▶ 영상 시청\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n캄보디아 범죄 배후로 지목된 프린스 그룹에 대한 제재가 시작된 후, 빅뱅 출신 승리가 방문해 논란이 됐던 현지 클럽도 문을 닫은 것으로 확인됐습니다.\n 오늘(21일) CBS 보도에 따르면 프린스 그룹이 운영한 것으로 알려진 클럽 겸 펍 '프린스 브루잉'은 최근 폐업했으며 현재는 새 사장이 인수해 재오픈을 준비 중인 것으로 알려졌습니다.\n 해당 클럽은 지난해 승리의 방문 모습을 담은 영상으로 화제가 된 곳입니다.\n 당시 승리는 무대에 올라 \"내가 지인들한테 캄보디아에 간다고 했더니 위험하지 않냐고, 잘 사는 국가도 아닌데 왜 가느냐고 하더라\"고 말했습니다.\n 그러면서 \"닥치고 여기 와서 캄보디아가 어떤 나라인지 보라고 말할 거다. 아시아에서 가장 훌륭한 국가인 캄보디아를 말이다\"라고 덧붙였습니다.\n 또 \"이 자리에 언젠가 지드래곤을 데려오겠다\"는 말까지 해 빈축을 사기도 했습니다.\n 당시에도 논란이 된 이 영상은 최근 캄보디아 납치 감금 사태가 불거지자 온라인 상에서 다시 주목을 받고 있습니다.\n 다만 승리와 프린스 브루잉, 프린스 홀딩 그룹 간의 직접적인 연관성은 아직까지 확인되지 않았습니다.\n 1987년생인 중국계 천즈 회장이 이끄는 프린스 그룹은 금융과 부동산 등으로 캄보디아 내에서 막대한 돈을 벌어들인 거로 전해졌습니다.\n 하지만 인신매매, 온라인 사기, 불법 감금 등 캄보디아 내 여러 범죄 단지의 실질적인 운영자로 지목돼 미국과 영국 정부는 프린스 그룹과 천 회장에 대해 공동 제재에 착수했습니다.\n 미국 법무부는 프린스 그룹에 대한 140여 건의 제재와 함께 천 회장을 강제 노동 수용소 운영과 대규모 암호화폐 사기 기획 혐의로 고소했습니다.\n 영국 정부도 천 회장이 소유한 런던 부동산 자산을 동결하고 영국 금융 시스템 이용을 금지했습니다.\n 이후 캄보디아 현지에선 프린스 그룹 본사 간판이 철거되는 모습이 포착돼 이들이 흔적 지우기에 나선 것 아니냐는 분석도 나오고 있습니다.\n '돼지 도살자(Pig Butcher)'로 불리는 천 회장은 캄보디아에서 절대 권력을 누리고 있는 훈 센 전 총리 일가와 친분이 두터운 것으로 알려졌는데, 지난 14일 미국과 영국의 제재 발표 이후 돌연 종적을 감춰 행방이 묘연한 상태입니다.\n (기획 : 김성화 / 영상편집 : 김나온 / 화면 출처 : 유튜브 / 제작 : 디지털뉴스편집부)\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120580_1280.jpg",
+            "type": "image/jpeg",
+            "length": "501561"
+          },
+          "content": "캄보디아 범죄 배후로 지목된 프린스 그룹에 대한 제재가 시작된 후, 빅뱅 출신 승리가 방문해 논란이 됐던 현지 클럽도 문을 닫은 것으로 확인됐습…",
+          "contentSnippet": "캄보디아 범죄 배후로 지목된 프린스 그룹에 대한 제재가 시작된 후, 빅뱅 출신 승리가 방문해 논란이 됐던 현지 클럽도 문을 닫은 것으로 확인됐습…",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299930",
+          "categories": [
+            {
+              "_": "국제",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=07"
+              }
+            },
+            {
+              "_": "GLOBAL",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=07"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "영국",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%98%81%EA%B5%AD"
+              }
+            },
+            {
+              "_": "미국",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%AF%B8%EA%B5%AD"
+              }
+            },
+            {
+              "_": "부동산",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%B6%80%EB%8F%99%EC%82%B0"
+              }
+            },
+            {
+              "_": "논란",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%85%BC%EB%9E%80"
+              }
+            },
+            {
+              "_": "분석",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%B6%84%EC%84%9D"
+              }
+            },
+            {
+              "_": "법무부",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%B2%95%EB%AC%B4%EB%B6%80"
+              }
+            },
+            {
+              "_": "무대",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%AC%B4%EB%8C%80"
+              }
+            },
+            {
+              "_": "부동산 주거",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%B6%80%EB%8F%99%EC%82%B0+%EC%A3%BC%EA%B1%B0"
+              }
+            },
+            {
+              "_": "경제",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B2%BD%EC%A0%9C"
+              }
+            },
+            {
+              "_": "뉴스영상",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsPlusList.do?themeId=10000000121"
+              }
+            }
+          ],
+          "isoDate": "2025-10-21T06:50:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "choice@sbs.co.kr(정혜경)",
+          "title": "\"간부 이름 못 외우면 죽을 준비해\" 가혹행위로 후임 사망 [자막뉴스]",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008300048",
+          "pubDate": "Tue, 21 Oct 2025 15:18:00 +0900",
+          "author": "choice@sbs.co.kr(정혜경)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008300048&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t지난 2022년 육군의 한 부대 생활관.분대장 A 씨는 자신의 지위를 이용해 후임병인 B 씨를 여러 차례 괴롭혔습니다.A 씨는 B 씨에게 &#3…\r\n\t\t\t\t\t\t\t<iframe width=\"640\" height=\"360\" src=\"https://news.sbs.co.kr/news/newsPlayerIframe.do?news_id=N1008300048&type=NEWS&plink=RSS\" frameborder=\"0\" scrolling=\"no\"><img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120573_700.jpg\" width=\"700\"></iframe><p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008300048&amp;plink=PLAY&amp;cooper=RSS&amp;autoplay=Y\">▶ 영상 시청</a></p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><p class='change'>지난 2022년 육군의 한 부대 생활관.</p>\n<!--4--><p class='change'> 분대장 A 씨는 자신의 지위를 이용해 후임병인 B 씨를 여러 차례 괴롭혔습니다.</p>\n<!--8--><p class='change'> A 씨는 B 씨에게 \"내일까지 대대 간부 이름을 전부 외워라\", \"외우지 못하면 죽을 준비를 해라\"라고 강요하고, 다음 날 \"간부 직책과 이름, 계급 중 하나를 무작위로 말하면 3초 안에 대답하라\"고 지시했습니다.</p>\n<!--12--><p class='change'> 이에 B 씨가 제대로 답하지 못하자, \"내일까지 외워오지 않으면 맞선임까지 죽는다\"고 폭언을 퍼부었습니다.</p>\n<!--16--><p class='change'> 비흡연자였던 B 씨는 그 후 담배를 피우기 시작했고, 공황장애와 우울증 증상을 보이다 지난해 6월 숨진 채 발견됐습니다.</p>\n<!--20--><p class='change'> B 씨의 한 선임병은 A 씨가 생전 타인에게 피해를 끼치는 것을 정말 싫어했다며, 자신을 포함해 다른 사람을 끌어들여 간접적으로 혼내려 할 때 매우 힘들어하고 죄책감을 느꼈다고 재판 과정에서 진술했습니다.</p>\n<!--24--><p class='change'> 인천지법 형사18단독 재판부는 직권남용 가혹행위 혐의로 기소된 A 씨에게 징역 1년 6개월에 집행유예 3년을 선고했습니다.</p>\n<!--28--><p class='change'> 재판부는 \"군대라는 특수한 상황에서 피고인은 직권을 남용해 가혹한 행위를 했고, 피해자 유족으로부터 용서받지 못했다\"면서도, \"피고인이 사실관계를 대체로 인정하고 형사처벌을 받은 전력이 없다는 점을 고려했다\"고 양형 이유를 설명했습니다.</p>\n<!--32--><p class='change'> * 위 콘텐츠는 AI오디오로 제작됐습니다.</p>\n<!--36--><p class='change'> (취재: 정혜경 / 영상편집: 김수영 / 디자인: 이수민 / 제작: 디지털뉴스편집부)</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008300048&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t지난 2022년 육군의 한 부대 생활관.분대장 A 씨는 자신의 지위를 이용해 후임병인 B 씨를 여러 차례 괴롭혔습니다.A 씨는 B 씨에게 \u0003…\r\n\t\t\t\t\t\t\t\n▶ 영상 시청\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n지난 2022년 육군의 한 부대 생활관.\n 분대장 A 씨는 자신의 지위를 이용해 후임병인 B 씨를 여러 차례 괴롭혔습니다.\n A 씨는 B 씨에게 \"내일까지 대대 간부 이름을 전부 외워라\", \"외우지 못하면 죽을 준비를 해라\"라고 강요하고, 다음 날 \"간부 직책과 이름, 계급 중 하나를 무작위로 말하면 3초 안에 대답하라\"고 지시했습니다.\n 이에 B 씨가 제대로 답하지 못하자, \"내일까지 외워오지 않으면 맞선임까지 죽는다\"고 폭언을 퍼부었습니다.\n 비흡연자였던 B 씨는 그 후 담배를 피우기 시작했고, 공황장애와 우울증 증상을 보이다 지난해 6월 숨진 채 발견됐습니다.\n B 씨의 한 선임병은 A 씨가 생전 타인에게 피해를 끼치는 것을 정말 싫어했다며, 자신을 포함해 다른 사람을 끌어들여 간접적으로 혼내려 할 때 매우 힘들어하고 죄책감을 느꼈다고 재판 과정에서 진술했습니다.\n 인천지법 형사18단독 재판부는 직권남용 가혹행위 혐의로 기소된 A 씨에게 징역 1년 6개월에 집행유예 3년을 선고했습니다.\n 재판부는 \"군대라는 특수한 상황에서 피고인은 직권을 남용해 가혹한 행위를 했고, 피해자 유족으로부터 용서받지 못했다\"면서도, \"피고인이 사실관계를 대체로 인정하고 형사처벌을 받은 전력이 없다는 점을 고려했다\"고 양형 이유를 설명했습니다.\n * 위 콘텐츠는 AI오디오로 제작됐습니다.\n (취재: 정혜경 / 영상편집: 김수영 / 디자인: 이수민 / 제작: 디지털뉴스편집부)\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120573_1280.jpg",
+            "type": "image/jpeg",
+            "length": "619090"
+          },
+          "content": "지난 2022년 육군의 한 부대 생활관.분대장 A 씨는 자신의 지위를 이용해 후임병인 B 씨를 여러 차례 괴롭혔습니다.A 씨는 B 씨에게 &#3…",
+          "contentSnippet": "지난 2022년 육군의 한 부대 생활관.분대장 A 씨는 자신의 지위를 이용해 후임병인 B 씨를 여러 차례 괴롭혔습니다.A 씨는 B 씨에게 \u0003…",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008300048",
+          "categories": [
+            {
+              "_": "사회",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=03"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "전력",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%A0%84%EB%A0%A5"
+              }
+            },
+            {
+              "_": "재판",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%9E%AC%ED%8C%90"
+              }
+            },
+            {
+              "_": "선고",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%84%A0%EA%B3%A0"
+              }
+            },
+            {
+              "_": "기소",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B8%B0%EC%86%8C"
+              }
+            },
+            {
+              "_": "고려",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B3%A0%EB%A0%A4"
+              }
+            },
+            {
+              "_": "이름",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%9D%B4%EB%A6%84"
+              }
+            },
+            {
+              "_": "간부",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B0%84%EB%B6%80"
+              }
+            },
+            {
+              "_": "뉴스영상",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsPlusList.do?themeId=10000000121"
+              }
+            }
+          ],
+          "isoDate": "2025-10-21T06:18:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "newsservice@sbs.co.kr(SBS)",
+          "title": "\"잘 키울게요\"…핏물 고인 쓰레기봉투 속 뒤엉킨 사체들",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299819",
+          "pubDate": "Tue, 21 Oct 2025 15:30:00 +0900",
+          "author": "newsservice@sbs.co.kr(SBS)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299819&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t완주의 한 아파트에서 강아지와 고양이 사체 여러 구가 쓰레기봉투에 담긴 채 발견됐습니다. 또, 탈수 상태의 반려동물도 구조됐습니다. 잘 키워줄 것처럼, 중고 거래 플랫폼을 통해 반려동물을 분양받은 뒤 방치한 것으로 추정됩니다.JTV 김민지 기자가 보도합니다.\r\n\t\t\t\t\t\t\t<iframe width=\"640\" height=\"360\" src=\"https://news.sbs.co.kr/news/newsPlayerIframe.do?news_id=N1008299819&type=NEWS&plink=RSS\" frameborder=\"0\" scrolling=\"no\"><img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120547_700.jpg\" width=\"700\"></iframe><p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299819&amp;plink=PLAY&amp;cooper=RSS&amp;autoplay=Y\">▶ 영상 시청</a></p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><p class='change'>&lt;앵커&gt;</p>\n<!--4--><p class='change'> 완주의 한 아파트에서 강아지와 고양이 사체 여러 구가 쓰레기봉투에 담긴 채 발견됐습니다.&nbsp;또, 탈수 상태의 반려동물도 구조됐습니다.&nbsp;잘 키워줄 것처럼, 중고 거래 플랫폼을 통해 반려동물을 분양받은 뒤 방치한 것으로 추정됩니다.</p>\n<!--8--><p class='change'> JTV 김민지 기자가 보도합니다.</p>\n<!--12--><p class='change'> &lt;기자&gt;</p>\n<!--16--><p class='change'> 쓰레기봉투 안에 고양이와 강아지 사체가 뒤엉켜 있습니다.</p>\n<!--20--><p class='change'> 사체가 부패하면서 봉투 밖으로 핏물이 새어 나옵니다.</p>\n<!--24--><p class='change'> [황미숙/전국길고양이보호단체연합 이사장 : 방문을 다 열었어요.&nbsp;그 문을 열고 나니까 냄새가 엄청나게.]</p>\n<!--28--><p class='change'> 지난 13일 20대 남성이 사는 완주의 한 아파트에서 동물 사체 더미가 발견됐습니다.</p>\n<!--32--><p class='change'> 아파트 내부에서 발견된 쓰레기봉투를 이곳에서 확인한 결과, 강아지와 고양이 등 모두 4마리의 사체가 확인됐습니다.</p>\n<!--36--><p class='change'> 이 남성의 집에서는 탈수 증세를 보이는 강아지 2마리와 고양이 4마리도 구조됐습니다.</p>\n<!--40--><p class='change'> [유용/수의사 : 강아지 한 마리가 하반신 마비가 있는 애가 있어서 문제가 됐는데, 구조되기 3일 전에는 다리를 잘 썼다고 해요.]</p>\n<!--44--><p class='change'> 남성은 중고거래 플랫폼을 통해 대구와 광주, 논산 등 전국에서 고양이와 강아지를 입양한 뒤 방치했다는 의혹을 받고 있습니다.</p>\n<!--48--><p class='change'> 자신을 동물 전문가로 소개하고 재정적인 능력을 과시하며 분양자들을 안심시켰습니다.</p>\n<!--52--><p class='change'> 하지만 분양 이후 동물들의 근황을 전혀 알리지 않는 등 수상한 행동을 보이자 분양자들이 신고하면서 이 같은 사실이 드러났습니다.</p>\n<!--56--><p class='change'> 중고거래 플랫폼에서는 동물 거래를 금지하고 있지만 공공연하게 분양이 이뤄지고 있습니다.</p>\n<!--60--><p class='change'> [유수경/전주시길고양이보호협회 대표 : 학대자나 상습 파양자가 계정을 바꾸면서 입양과 파양을 계속하고 있어요.&nbsp;동물 거래를 게시할 시에는 자동 차단 같은 그런 정책적인 부분이 필요하다고 생각합니다.]</p>\n<!--64--><p class='change'> 경찰은 동물보호법 위반 혐의로 이 남성을 조사하고 학대 정황이 있는지 살펴보기 위해 부검을 의뢰했습니다.</p>\n<!--68--><p class='change'> [경찰 관계자 : 직접적인 물리적인 행동을 해서 학대를 했는지 그런 부분을 좀 확인을 해봐야 할 거 같아요.]</p>\n<!--72--><p class='change'> 부검 결과가 나오기까지 최소 한 달 이상 소요될 것으로 보여 학대가 있었는지 확인하려면 다소 시일이 걸릴 것으로 예상됩니다.</p>\n<!--76--><p class='change'> (영상취재 : 안상준 JTV, 디자인 : 원소정 JTV)</p>\n<!--80--><p class='change'> JTV 김민지</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299819&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t완주의 한 아파트에서 강아지와 고양이 사체 여러 구가 쓰레기봉투에 담긴 채 발견됐습니다. 또, 탈수 상태의 반려동물도 구조됐습니다. 잘 키워줄 것처럼, 중고 거래 플랫폼을 통해 반려동물을 분양받은 뒤 방치한 것으로 추정됩니다.JTV 김민지 기자가 보도합니다.\r\n\t\t\t\t\t\t\t\n▶ 영상 시청\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n<앵커>\n 완주의 한 아파트에서 강아지와 고양이 사체 여러 구가 쓰레기봉투에 담긴 채 발견됐습니다. 또, 탈수 상태의 반려동물도 구조됐습니다. 잘 키워줄 것처럼, 중고 거래 플랫폼을 통해 반려동물을 분양받은 뒤 방치한 것으로 추정됩니다.\n JTV 김민지 기자가 보도합니다.\n <기자>\n 쓰레기봉투 안에 고양이와 강아지 사체가 뒤엉켜 있습니다.\n 사체가 부패하면서 봉투 밖으로 핏물이 새어 나옵니다.\n [황미숙/전국길고양이보호단체연합 이사장 : 방문을 다 열었어요. 그 문을 열고 나니까 냄새가 엄청나게.]\n 지난 13일 20대 남성이 사는 완주의 한 아파트에서 동물 사체 더미가 발견됐습니다.\n 아파트 내부에서 발견된 쓰레기봉투를 이곳에서 확인한 결과, 강아지와 고양이 등 모두 4마리의 사체가 확인됐습니다.\n 이 남성의 집에서는 탈수 증세를 보이는 강아지 2마리와 고양이 4마리도 구조됐습니다.\n [유용/수의사 : 강아지 한 마리가 하반신 마비가 있는 애가 있어서 문제가 됐는데, 구조되기 3일 전에는 다리를 잘 썼다고 해요.]\n 남성은 중고거래 플랫폼을 통해 대구와 광주, 논산 등 전국에서 고양이와 강아지를 입양한 뒤 방치했다는 의혹을 받고 있습니다.\n 자신을 동물 전문가로 소개하고 재정적인 능력을 과시하며 분양자들을 안심시켰습니다.\n 하지만 분양 이후 동물들의 근황을 전혀 알리지 않는 등 수상한 행동을 보이자 분양자들이 신고하면서 이 같은 사실이 드러났습니다.\n 중고거래 플랫폼에서는 동물 거래를 금지하고 있지만 공공연하게 분양이 이뤄지고 있습니다.\n [유수경/전주시길고양이보호협회 대표 : 학대자나 상습 파양자가 계정을 바꾸면서 입양과 파양을 계속하고 있어요. 동물 거래를 게시할 시에는 자동 차단 같은 그런 정책적인 부분이 필요하다고 생각합니다.]\n 경찰은 동물보호법 위반 혐의로 이 남성을 조사하고 학대 정황이 있는지 살펴보기 위해 부검을 의뢰했습니다.\n [경찰 관계자 : 직접적인 물리적인 행동을 해서 학대를 했는지 그런 부분을 좀 확인을 해봐야 할 거 같아요.]\n 부검 결과가 나오기까지 최소 한 달 이상 소요될 것으로 보여 학대가 있었는지 확인하려면 다소 시일이 걸릴 것으로 예상됩니다.\n (영상취재 : 안상준 JTV, 디자인 : 원소정 JTV)\n JTV 김민지\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120547_1280.jpg",
+            "type": "image/jpeg",
+            "length": "79563"
+          },
+          "content": "완주의 한 아파트에서 강아지와 고양이 사체 여러 구가 쓰레기봉투에 담긴 채 발견됐습니다. 또, 탈수 상태의 반려동물도 구조됐습니다. 잘 키워줄 것처럼, 중고 거래 플랫폼을 통해 반려동물을 분양받은 뒤 방치한 것으로 추정됩니다.JTV 김민지 기자가 보도합니다.",
+          "contentSnippet": "완주의 한 아파트에서 강아지와 고양이 사체 여러 구가 쓰레기봉투에 담긴 채 발견됐습니다. 또, 탈수 상태의 반려동물도 구조됐습니다. 잘 키워줄 것처럼, 중고 거래 플랫폼을 통해 반려동물을 분양받은 뒤 방치한 것으로 추정됩니다.JTV 김민지 기자가 보도합니다.",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299819",
+          "categories": [
+            {
+              "_": "사회",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=03"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "강아지",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B0%95%EC%95%84%EC%A7%80"
+              }
+            },
+            {
+              "_": "jtv",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=jtv"
+              }
+            },
+            {
+              "_": "학대",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%95%99%EB%8C%80"
+              }
+            },
+            {
+              "_": "아파트",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%95%84%ED%8C%8C%ED%8A%B8"
+              }
+            },
+            {
+              "_": "반려동물",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%B0%98%EB%A0%A4%EB%8F%99%EB%AC%BC"
+              }
+            },
+            {
+              "_": "경찰",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B2%BD%EC%B0%B0"
+              }
+            },
+            {
+              "_": "전국",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%A0%84%EA%B5%AD"
+              }
+            }
+          ],
+          "isoDate": "2025-10-21T06:30:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "sun@sbs.co.kr(장선이)",
+          "title": "형광조끼 입고 점검하듯…7분 만에 루브르 털린 순간",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299817",
+          "pubDate": "Tue, 21 Oct 2025 12:24:00 +0900",
+          "author": "sun@sbs.co.kr(장선이)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299817&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t프랑스 파리의 루브르 박물관에 괴한이 침입해 왕실 보석들을 털어간 가운데, 절도범들의 범행 장면이 담긴 영상이 공개됐습니다. 이번 사태를 계기로 주변 나라들의 문화재 보안에도 비상이 걸렸습니다.장선이 기자의 보도입니다.\r\n\t\t\t\t\t\t\t<iframe width=\"640\" height=\"360\" src=\"https://news.sbs.co.kr/news/newsPlayerIframe.do?news_id=N1008299817&type=NEWS&plink=RSS\" frameborder=\"0\" scrolling=\"no\"><img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120541_700.jpg\" width=\"700\"></iframe><p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299817&amp;plink=PLAY&amp;cooper=RSS&amp;autoplay=Y\">▶ 영상 시청</a></p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><p class='change'>&lt;앵커&gt;</p>\n<!--4--><p class='change'> 프랑스 파리의 루브르 박물관에 괴한이 침입해 왕실 보석들을 털어간 가운데, 절도범들의 범행 장면이 담긴 영상이 공개됐습니다.&nbsp;이번 사태를 계기로 주변 나라들의 문화재 보안에도 비상이 걸렸습니다.</p>\n<!--8--><p class='change'> 장선이 기자의 보도입니다.</p>\n<!--12--><p class='change'> &lt;기자&gt;</p>\n<!--16--><p class='change'> 형광색 작업복을 입은 한 남성이 루브르 아폴로 전시실에서 유물이 담긴 보안 유리를 이리저리 만지면서 작업을 하고 있습니다.</p>\n<!--20--><p class='change'> 언뜻 보면 박물관 관계자가 유물을 점검하는 것 같이 보이지만, 이 남성은 이번 루브르 보물을 훔친 절도범이었습니다.</p>\n<!--24--><p class='change'> 프랑스 방송사 BFMTV가 아폴로 갤러리에서 보석을 훔치는 절도범의 모습 담은 영상을 입수해 공개했습니다.</p>\n<!--28--><p class='change'> 절도범들은 개장 30분 후인 오전 9시 30분쯤 침입해 사다리차를 이용해 외벽 창문에 접근했고, 절단 도구를 사용해 두 개의 방탄 진열장을 강제로 열고 7분도 안 돼 사라졌습니다.</p>\n<!--32--><p class='change'> 도난품에는 나폴레옹 1세가 부인 마리 루이즈 황후에게 선물한 에메랄드·다이아몬드 목걸이, 나폴레옹 3세의 부인 외제니 황후의 왕관 등 8점이 포함됐습니다.</p>\n<!--36--><p class='change'> 프랑스 정부는 경찰과 문화재 전담 수사팀을 투입해 절도범의 행적을 쫓고 있지만, 아직 이들의 행적은 묘연한 상태입니다.</p>\n<!--40--><p class='change'> [아서 브랜드/미술사학자 : 보안이 지금보다 훨씬 더 강화돼야 합니다.&nbsp;차를 몰고 와서 창문으로 침입할 수 있어서는 안 되는 겁니다.]</p>\n<!--44--><p class='change'> 이번 사건을 계기로 문화재 보호에 대한 우려가 전 세계적으로 커지고 있습니다.</p>\n<!--48--><p class='change'> 이웃 나라 '문화유산 대국' 이탈리아는 AI와 빅데이터 분석, 사이버 보안 등을 활용해 유물 주변의 의심스러운 행동을 인식하도록 하는 유물 도난 예방·감시 체계 개선 계획을 발표했습니다.</p>\n<!--52--><p class='change'> 이 계획에는 유럽으로부터 지원받은 자금 7천만 유로, 약 1천160억 원이 투입됩니다.</p>\n<!--56--><p class='change'> 전문가들은 이번 도난 사건을 1911년 모나리자 도난 이후 루브르 역사상 최악의 보안 참사로 평가하고 있습니다.</p>\n<!--60--><p class='change'> (영상편집 : 정용화)&nbsp;</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299817&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t프랑스 파리의 루브르 박물관에 괴한이 침입해 왕실 보석들을 털어간 가운데, 절도범들의 범행 장면이 담긴 영상이 공개됐습니다. 이번 사태를 계기로 주변 나라들의 문화재 보안에도 비상이 걸렸습니다.장선이 기자의 보도입니다.\r\n\t\t\t\t\t\t\t\n▶ 영상 시청\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n<앵커>\n 프랑스 파리의 루브르 박물관에 괴한이 침입해 왕실 보석들을 털어간 가운데, 절도범들의 범행 장면이 담긴 영상이 공개됐습니다. 이번 사태를 계기로 주변 나라들의 문화재 보안에도 비상이 걸렸습니다.\n 장선이 기자의 보도입니다.\n <기자>\n 형광색 작업복을 입은 한 남성이 루브르 아폴로 전시실에서 유물이 담긴 보안 유리를 이리저리 만지면서 작업을 하고 있습니다.\n 언뜻 보면 박물관 관계자가 유물을 점검하는 것 같이 보이지만, 이 남성은 이번 루브르 보물을 훔친 절도범이었습니다.\n 프랑스 방송사 BFMTV가 아폴로 갤러리에서 보석을 훔치는 절도범의 모습 담은 영상을 입수해 공개했습니다.\n 절도범들은 개장 30분 후인 오전 9시 30분쯤 침입해 사다리차를 이용해 외벽 창문에 접근했고, 절단 도구를 사용해 두 개의 방탄 진열장을 강제로 열고 7분도 안 돼 사라졌습니다.\n 도난품에는 나폴레옹 1세가 부인 마리 루이즈 황후에게 선물한 에메랄드·다이아몬드 목걸이, 나폴레옹 3세의 부인 외제니 황후의 왕관 등 8점이 포함됐습니다.\n 프랑스 정부는 경찰과 문화재 전담 수사팀을 투입해 절도범의 행적을 쫓고 있지만, 아직 이들의 행적은 묘연한 상태입니다.\n [아서 브랜드/미술사학자 : 보안이 지금보다 훨씬 더 강화돼야 합니다. 차를 몰고 와서 창문으로 침입할 수 있어서는 안 되는 겁니다.]\n 이번 사건을 계기로 문화재 보호에 대한 우려가 전 세계적으로 커지고 있습니다.\n 이웃 나라 '문화유산 대국' 이탈리아는 AI와 빅데이터 분석, 사이버 보안 등을 활용해 유물 주변의 의심스러운 행동을 인식하도록 하는 유물 도난 예방·감시 체계 개선 계획을 발표했습니다.\n 이 계획에는 유럽으로부터 지원받은 자금 7천만 유로, 약 1천160억 원이 투입됩니다.\n 전문가들은 이번 도난 사건을 1911년 모나리자 도난 이후 루브르 역사상 최악의 보안 참사로 평가하고 있습니다.\n (영상편집 : 정용화) \n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120541_1280.jpg",
+            "type": "image/jpeg",
+            "length": "77995"
+          },
+          "content": "프랑스 파리의 루브르 박물관에 괴한이 침입해 왕실 보석들을 털어간 가운데, 절도범들의 범행 장면이 담긴 영상이 공개됐습니다. 이번 사태를 계기로 주변 나라들의 문화재 보안에도 비상이 걸렸습니다.장선이 기자의 보도입니다.",
+          "contentSnippet": "프랑스 파리의 루브르 박물관에 괴한이 침입해 왕실 보석들을 털어간 가운데, 절도범들의 범행 장면이 담긴 영상이 공개됐습니다. 이번 사태를 계기로 주변 나라들의 문화재 보안에도 비상이 걸렸습니다.장선이 기자의 보도입니다.",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299817",
+          "categories": [
+            {
+              "_": "국제",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=07"
+              }
+            },
+            {
+              "_": "GLOBAL",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=07"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "프랑스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%94%84%EB%9E%91%EC%8A%A4"
+              }
+            },
+            {
+              "_": "이탈리아",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%9D%B4%ED%83%88%EB%A6%AC%EC%95%84"
+              }
+            },
+            {
+              "_": "분석",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%B6%84%EC%84%9D"
+              }
+            },
+            {
+              "_": "경찰",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B2%BD%EC%B0%B0"
+              }
+            },
+            {
+              "_": "ai",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=ai"
+              }
+            },
+            {
+              "_": "bfmtv",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=bfmtv"
+              }
+            }
+          ],
+          "isoDate": "2025-10-21T03:24:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "newsservice@sbs.co.kr(SBS)",
+          "title": "자녀 흡연 징계에 \"학교 엎어봐?\"…25분 따진 후 해명",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299818",
+          "pubDate": "Tue, 21 Oct 2025 15:20:00 +0900",
+          "author": "newsservice@sbs.co.kr(SBS)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299818&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t교사가 학교 밖에서 담배 피우는 학생을 봤다면 이를 지도하는 게 당연한 일일 겁니다. 이 학생에게는 봉사 처분이 내려졌는데 해당 교사는 학부모의 협박성 민원 전화를 받았습니다.\r\n\t\t\t\t\t\t\t<iframe width=\"640\" height=\"360\" src=\"https://news.sbs.co.kr/news/newsPlayerIframe.do?news_id=N1008299818&type=NEWS&plink=RSS\" frameborder=\"0\" scrolling=\"no\"><img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120542_700.jpg\" width=\"700\"></iframe><p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299818&amp;plink=PLAY&amp;cooper=RSS&amp;autoplay=Y\">▶ 영상 시청</a></p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><p class='change'>&lt;앵커&gt;</p>\n<!--4--><p class='change'> 교사가 학교 밖에서 담배 피우는 학생을 봤다면 이를 지도하는 게 당연한 일일 겁니다. 이 학생에게는 봉사 처분이 내려졌는데 해당 교사는 학부모의 협박성 민원 전화를 받았습니다. 교권침해라는 지적이 나오는 가운데 학부모는 학교 측이 먼저 자신을 신고해서 문제를 키웠다고 반박하고 있습니다.</p>\n<!--8--><p class='change'> JTV 최유선 기자입니다.</p>\n<!--12--><p class='change'> &lt;기자&gt;</p>\n<!--16--><p class='change'> 전북의 한 고등학교에 근무하는 교사 A 씨는 지난 10일 학부모의 전화를 받았습니다.</p>\n<!--20--><p class='change'> 학교 밖에서 전자담배를 피우다 걸린 학생에 대해 교내 봉사 10시간 처분을 고지한 직후였습니다.</p>\n<!--24--><p class='change'> [학부모 : 이게 한 번 정도는 이게, 이것 교외에서도 적발하는지 몰랐으니까 넘어갈 수 있는 거 아닌가, 응?]</p>\n<!--28--><p class='change'> [A교사 : 그거는 아버님이 저희한테 그렇게…]</p>\n<!--32--><p class='change'> 징계 절차와 규정을 따지던 학부모는 이내 협박성 발언을 쏟아냈습니다.</p>\n<!--36--><p class='change'> [학부모 : 그럼 내가 이번에 한번 내가 엎어줄게요.&nbsp;그럼 다 학교 한번 쑥대밭 만들어 줄게요.]</p>\n<!--40--><p class='change'> 25분가량 이어진 민원 전화에 교사 A 씨는 정신적 고통을 호소하고 있습니다.</p>\n<!--44--><p class='change'> 학생의 흡연 장면을 촬영해 학교에 알린 또 다른 교사는 초상권 침해 등의 이유로 아동 학대 관련 조사를 앞두고 있습니다.</p>\n<!--48--><p class='change'> 도내 교원단체들은 명백한 교권 침해라며, 학부모들의 악성 민원에 교육청이 나서 조치해야 한다고 주장했습니다.</p>\n<!--52--><p class='change'> [강현아/전북교사노조 수석 부위원장 : 아동 학대 신고를 하겠다는 협박 등은 교사의 교육 활동을 위축시킬 수밖에 없는 사안이었습니다.]</p>\n<!--56--><p class='change'> 해당 학부모는 A 교사에게 감정적으로 대했던 것은 사실이라며, 사과하고 싶다고 말했습니다.</p>\n<!--60--><p class='change'> 그러면서도 학교 측이 먼저 자신을 교권침해로 신고했고, 자신의 아이가 학교에서도 차별을 받고 있는 것 같아 교육청에 민원을 넣은 것뿐이라고 해명했습니다.</p>\n<!--64--><p class='change'> [해당 학부모 : 교육청에 민원을 넣으면 거기서는 전수조사 권한이 있다고 그래서 그러면 좀 팩트 체크가 돼야, 어떤 문제 해결 방안이 되지 않을까?]</p>\n<!--68--><p class='change'> 또다시 촉발된 학내 악성 민원 논란, 서울 서이초 교사의 비극 이후 민원 창구를 학교 관리자로 일원화하는 조치가 도입됐지만 현장에서는 여전히 교사들이 민원에 시달리며 교단에 서고 있습니다.</p>\n<!--72--><p class='change'> (영상취재 : 정희도 JTV, 디자인 : 원소정 JTV)</p>\n<!--76--><p class='change'> JTV 최유선</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299818&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t교사가 학교 밖에서 담배 피우는 학생을 봤다면 이를 지도하는 게 당연한 일일 겁니다. 이 학생에게는 봉사 처분이 내려졌는데 해당 교사는 학부모의 협박성 민원 전화를 받았습니다.\r\n\t\t\t\t\t\t\t\n▶ 영상 시청\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n<앵커>\n 교사가 학교 밖에서 담배 피우는 학생을 봤다면 이를 지도하는 게 당연한 일일 겁니다. 이 학생에게는 봉사 처분이 내려졌는데 해당 교사는 학부모의 협박성 민원 전화를 받았습니다. 교권침해라는 지적이 나오는 가운데 학부모는 학교 측이 먼저 자신을 신고해서 문제를 키웠다고 반박하고 있습니다.\n JTV 최유선 기자입니다.\n <기자>\n 전북의 한 고등학교에 근무하는 교사 A 씨는 지난 10일 학부모의 전화를 받았습니다.\n 학교 밖에서 전자담배를 피우다 걸린 학생에 대해 교내 봉사 10시간 처분을 고지한 직후였습니다.\n [학부모 : 이게 한 번 정도는 이게, 이것 교외에서도 적발하는지 몰랐으니까 넘어갈 수 있는 거 아닌가, 응?]\n [A교사 : 그거는 아버님이 저희한테 그렇게…]\n 징계 절차와 규정을 따지던 학부모는 이내 협박성 발언을 쏟아냈습니다.\n [학부모 : 그럼 내가 이번에 한번 내가 엎어줄게요. 그럼 다 학교 한번 쑥대밭 만들어 줄게요.]\n 25분가량 이어진 민원 전화에 교사 A 씨는 정신적 고통을 호소하고 있습니다.\n 학생의 흡연 장면을 촬영해 학교에 알린 또 다른 교사는 초상권 침해 등의 이유로 아동 학대 관련 조사를 앞두고 있습니다.\n 도내 교원단체들은 명백한 교권 침해라며, 학부모들의 악성 민원에 교육청이 나서 조치해야 한다고 주장했습니다.\n [강현아/전북교사노조 수석 부위원장 : 아동 학대 신고를 하겠다는 협박 등은 교사의 교육 활동을 위축시킬 수밖에 없는 사안이었습니다.]\n 해당 학부모는 A 교사에게 감정적으로 대했던 것은 사실이라며, 사과하고 싶다고 말했습니다.\n 그러면서도 학교 측이 먼저 자신을 교권침해로 신고했고, 자신의 아이가 학교에서도 차별을 받고 있는 것 같아 교육청에 민원을 넣은 것뿐이라고 해명했습니다.\n [해당 학부모 : 교육청에 민원을 넣으면 거기서는 전수조사 권한이 있다고 그래서 그러면 좀 팩트 체크가 돼야, 어떤 문제 해결 방안이 되지 않을까?]\n 또다시 촉발된 학내 악성 민원 논란, 서울 서이초 교사의 비극 이후 민원 창구를 학교 관리자로 일원화하는 조치가 도입됐지만 현장에서는 여전히 교사들이 민원에 시달리며 교단에 서고 있습니다.\n (영상취재 : 정희도 JTV, 디자인 : 원소정 JTV)\n JTV 최유선\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120542_1280.jpg",
+            "type": "image/jpeg",
+            "length": "69252"
+          },
+          "content": "교사가 학교 밖에서 담배 피우는 학생을 봤다면 이를 지도하는 게 당연한 일일 겁니다. 이 학생에게는 봉사 처분이 내려졌는데 해당 교사는 학부모의 협박성 민원 전화를 받았습니다.",
+          "contentSnippet": "교사가 학교 밖에서 담배 피우는 학생을 봤다면 이를 지도하는 게 당연한 일일 겁니다. 이 학생에게는 봉사 처분이 내려졌는데 해당 교사는 학부모의 협박성 민원 전화를 받았습니다.",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299818",
+          "categories": [
+            {
+              "_": "사회",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=03"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "학대",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%95%99%EB%8C%80"
+              }
+            },
+            {
+              "_": "호소",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%98%B8%EC%86%8C"
+              }
+            },
+            {
+              "_": "전북",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%A0%84%EB%B6%81"
+              }
+            },
+            {
+              "_": "서울",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%84%9C%EC%9A%B8"
+              }
+            },
+            {
+              "_": "논란",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%85%BC%EB%9E%80"
+              }
+            },
+            {
+              "_": "민원",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%AF%BC%EC%9B%90"
+              }
+            }
+          ],
+          "isoDate": "2025-10-21T06:20:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "sbsnewmedia@sbs.co.kr(유영규)",
+          "title": "1000평서 몽땅 사라졌다…\"훼손 거의 없어, 전문가인 듯\"",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299520",
+          "pubDate": "Tue, 21 Oct 2025 15:20:00 +0900",
+          "author": "sbsnewmedia@sbs.co.kr(유영규)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299520&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t<img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120500_700.jpg\" width=\"700\">\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--subsub0--><p class='change strongtag'><strong>▲ 감나무 자료사진</strong></p>\n<!--3--><p class='change'> 경남 함안에서 수확을 앞두고 나무에 매달려있던 대봉감을 대량 도난당했다는 농가 신고가 들어와 경찰이 수사에 나섰습니다.</p>\n<!--7--><p class='change'> 함안경찰서에 따르면 지난 16일 함안군 군북면에서 감 농장을 운영하는 60대 A 씨는 다음 달 수확 예정이던 대봉감이 감나무에서 감쪽같이 사라졌다고 경찰에 신고했습니다.</p>\n<!--11--><p class='change'> 도난당한 대봉감은 10㎏ 상자 기준 300개 분량으로, 대략 900만 원 상당입니다.</p>\n<!--15--><p class='change'> A 씨는 추석 연휴가 끝나고 지난 15일 약 1천 평(약 3천305㎡) 규모의 농장에 있는 감나무 120그루에서 제대로 익지도 않은 대봉감이 몽땅 사라진 것을 확인했습니다.</p>\n<!--19--><p class='change'> 그는 감을 딸 때 감나무 훼손이 거의 없었던 점으로 미뤄 전문 농작물절도범이 차량을 동원해 대봉감을 대거 훔쳐 간 것으로 추정합니다.</p>\n<!--23--><p class='change'> 수확을 앞두고 1년 동안 애지중지 기른 대봉감을 한번에 털린 A 씨는 망연자실하고 있는 것으로 전해졌습니다.</p>\n<!--27--><p class='change'> 경찰은 농장 주변 폐쇄회로(CC) TV 영상 등을 토대로 절도 용의자를 추적하고 있습니다.</p>\n<!--31--><p class='change'> (사진=연합뉴스)</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299520&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n▲ 감나무 자료사진\n 경남 함안에서 수확을 앞두고 나무에 매달려있던 대봉감을 대량 도난당했다는 농가 신고가 들어와 경찰이 수사에 나섰습니다.\n 함안경찰서에 따르면 지난 16일 함안군 군북면에서 감 농장을 운영하는 60대 A 씨는 다음 달 수확 예정이던 대봉감이 감나무에서 감쪽같이 사라졌다고 경찰에 신고했습니다.\n 도난당한 대봉감은 10㎏ 상자 기준 300개 분량으로, 대략 900만 원 상당입니다.\n A 씨는 추석 연휴가 끝나고 지난 15일 약 1천 평(약 3천305㎡) 규모의 농장에 있는 감나무 120그루에서 제대로 익지도 않은 대봉감이 몽땅 사라진 것을 확인했습니다.\n 그는 감을 딸 때 감나무 훼손이 거의 없었던 점으로 미뤄 전문 농작물절도범이 차량을 동원해 대봉감을 대거 훔쳐 간 것으로 추정합니다.\n 수확을 앞두고 1년 동안 애지중지 기른 대봉감을 한번에 털린 A 씨는 망연자실하고 있는 것으로 전해졌습니다.\n 경찰은 농장 주변 폐쇄회로(CC) TV 영상 등을 토대로 절도 용의자를 추적하고 있습니다.\n (사진=연합뉴스)\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120500_1280.jpg",
+            "type": "image/jpeg",
+            "length": "138468"
+          },
+          "content": "&#9650; 감나무 자료사진경남 함안에서 수확을 앞두고 나무에 매달려있던 대봉감을 대량 도난당했다는 농가 신고가 들어와 경찰이 수사에 나섰습니…",
+          "contentSnippet": "▲ 감나무 자료사진경남 함안에서 수확을 앞두고 나무에 매달려있던 대봉감을 대량 도난당했다는 농가 신고가 들어와 경찰이 수사에 나섰습니…",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299520",
+          "categories": [
+            {
+              "_": "사회",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=03"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "경찰",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B2%BD%EC%B0%B0"
+              }
+            },
+            {
+              "_": "추석",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%B6%94%EC%84%9D"
+              }
+            },
+            {
+              "_": "차량",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%B0%A8%EB%9F%89"
+              }
+            },
+            {
+              "_": "수사",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%88%98%EC%82%AC"
+              }
+            },
+            {
+              "_": "경남",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B2%BD%EB%82%A8"
+              }
+            },
+            {
+              "_": "tv",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=tv"
+              }
+            },
+            {
+              "_": "대봉감",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%8C%80%EB%B4%89%EA%B0%90"
+              }
+            }
+          ],
+          "isoDate": "2025-10-21T06:20:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "newsservice@sbs.co.kr(SBS)",
+          "title": "\"또 제주도?\" 한숨…\"먹다 남긴 줄\" 바가지 논란",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299063",
+          "pubDate": "Tue, 21 Oct 2025 09:54:00 +0900",
+          "author": "newsservice@sbs.co.kr(SBS)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299063&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t최근 전국 곳곳에서 관광객들을 대상으로 한 바가지 논란이 잇따르고 있죠.이번엔 또 제주도에서 이런 일이 있었나 봐요?최근 온라인에 제주 올레시장…\r\n\t\t\t\t\t\t\t<iframe width=\"640\" height=\"360\" src=\"https://news.sbs.co.kr/news/newsPlayerIframe.do?news_id=N1008299063&type=NEWS&plink=RSS\" frameborder=\"0\" scrolling=\"no\"><img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120456_700.jpg\" width=\"700\"></iframe><p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299063&amp;plink=PLAY&amp;cooper=RSS&amp;autoplay=Y\">▶ 영상 시청</a></p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><p class='change'>최근 전국 곳곳에서 관광객들을 대상으로 한 바가지 논란이 잇따르고 있죠.</p>\n<!--4--><p class='change'> 이번엔 또 제주도에서 이런 일이 있었나 봐요?</p>\n<!--8--><p class='change'> 최근 온라인에 제주 올레시장 철판오징어가 가격에 비해 양이 너무 적다는 글이 올라왔습니다.</p>\n<!--12--><p class='change'> 중자 크기로 판매된 철판 오징어 값은 1만 5천 원이지만, 실제 손님이 받은 포장 상자에는 몸통 대신 다리 몇 개만 담겨 있었습니다.</p>\n<!--16--><p class='change'> 제보한 여행객은 '불쇼'로 손님을 끌어 모았지만, 막상 받아보니 오징어가 반 마리도 안 되는 것 같다며, 관광객을 상대로 양심 없는 장사를 하고 있다고 주장했습니다.</p>\n<!--20--><p class='change'> 누리꾼들 역시 터무니없는 양에 분노했지만, 일부는 요즘 오징어 한 마리에 2만 원을 넘는다며 이해할 수 있다는 반응도 보였습니다.</p>\n<!--24--><p class='change'> 앞서 제주도에선 비계 목살이나 김밥 등 비슷한 사례가 이어졌던 만큼, 신뢰 회복을 위한 개선이 시급하다는 지적이 나오고 있습니다.</p>\n<!--28--><p class='change'> (화면출처 : 보배드림)</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299063&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t최근 전국 곳곳에서 관광객들을 대상으로 한 바가지 논란이 잇따르고 있죠.이번엔 또 제주도에서 이런 일이 있었나 봐요?최근 온라인에 제주 올레시장…\r\n\t\t\t\t\t\t\t\n▶ 영상 시청\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n최근 전국 곳곳에서 관광객들을 대상으로 한 바가지 논란이 잇따르고 있죠.\n 이번엔 또 제주도에서 이런 일이 있었나 봐요?\n 최근 온라인에 제주 올레시장 철판오징어가 가격에 비해 양이 너무 적다는 글이 올라왔습니다.\n 중자 크기로 판매된 철판 오징어 값은 1만 5천 원이지만, 실제 손님이 받은 포장 상자에는 몸통 대신 다리 몇 개만 담겨 있었습니다.\n 제보한 여행객은 '불쇼'로 손님을 끌어 모았지만, 막상 받아보니 오징어가 반 마리도 안 되는 것 같다며, 관광객을 상대로 양심 없는 장사를 하고 있다고 주장했습니다.\n 누리꾼들 역시 터무니없는 양에 분노했지만, 일부는 요즘 오징어 한 마리에 2만 원을 넘는다며 이해할 수 있다는 반응도 보였습니다.\n 앞서 제주도에선 비계 목살이나 김밥 등 비슷한 사례가 이어졌던 만큼, 신뢰 회복을 위한 개선이 시급하다는 지적이 나오고 있습니다.\n (화면출처 : 보배드림)\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120456_1280.jpg",
+            "type": "image/jpeg",
+            "length": "224346"
+          },
+          "content": "최근 전국 곳곳에서 관광객들을 대상으로 한 바가지 논란이 잇따르고 있죠.이번엔 또 제주도에서 이런 일이 있었나 봐요?최근 온라인에 제주 올레시장…",
+          "contentSnippet": "최근 전국 곳곳에서 관광객들을 대상으로 한 바가지 논란이 잇따르고 있죠.이번엔 또 제주도에서 이런 일이 있었나 봐요?최근 온라인에 제주 올레시장…",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299063",
+          "categories": [
+            {
+              "_": "사회",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=03"
+              }
+            },
+            {
+              "_": "모닝와이드 2부",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/programMain.do?prog_cd="
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "논란",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%85%BC%EB%9E%80"
+              }
+            },
+            {
+              "_": "또 제주도",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%98%90+%EC%A0%9C%EC%A3%BC%EB%8F%84"
+              }
+            },
+            {
+              "_": "제보",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%A0%9C%EB%B3%B4"
+              }
+            },
+            {
+              "_": "전국",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%A0%84%EA%B5%AD"
+              }
+            },
+            {
+              "_": "분노",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%B6%84%EB%85%B8"
+              }
+            },
+            {
+              "_": "가격",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B0%80%EA%B2%A9"
+              }
+            },
+            {
+              "_": "먹다 남긴 줄",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%A8%B9%EB%8B%A4+%EB%82%A8%EA%B8%B4+%EC%A4%84"
+              }
+            },
+            {
+              "_": "뉴스딱",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsPlusList.do?themeId=10000000188"
+              }
+            }
+          ],
+          "isoDate": "2025-10-21T00:54:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "sbsnewmedia@sbs.co.kr(유영규)",
+          "title": "도심 서울센터빌딩 화재 초진…10여 명 옥상서 구조대기",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299719",
+          "pubDate": "Tue, 21 Oct 2025 11:17:00 +0900",
+          "author": "sbsnewmedia@sbs.co.kr(유영규)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299719&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t<img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120526_700.jpg\" width=\"700\">\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><figure class='change imgtag'><img alt=\"SBS 뉴스 이미지\" data-captionyn=\"N\" id=\"i202120519\" src=\"https://img.sbs.co.kr/newimg/news/20251021/202120519_700.jpg\" style=\"display:block; margin:20px auto\" v_height=\"720\" v_width=\"1280\"></figure>\n<!--1--><figure class='change imgtag'><img alt=\"SBS 뉴스 이미지\" data-captionyn=\"N\" id=\"i202120516\" src=\"https://img.sbs.co.kr/newimg/news/20251021/202120516_700.jpg\" style=\"display:block; margin:20px auto\" v_height=\"720\" v_width=\"1280\"></figure>\n<!--subsub3--><p class='change strongtag'><strong>▲ 21일 서울광장 인근 서울센터빌딩에서 화재가 발생해 소방대원들이 진화 작업을 하고 있다.</strong></p>\n<!--6--><p class='change'> 오늘(21일) 오전 9시 46분 서울 중구 소공동 소재 서울센터빌딩에서 화재가 발생해 3명이 응급조치를 받고 110여 명이 대피했습니다.</p>\n<!--10--><p class='change'> 소방 당국은 불이 난지 약 44분 만인 10시 30분 초진에 성공한 뒤 나머지 불을 정리 중입니다.</p>\n<!--14--><p class='change'> 현재까지 인명 피해는 없는 것으로 확인됐습니다.</p>\n<!--18--><p class='change'> 공사 중이던 인부 104명은 스스로 대피했고 3명이 응급조치를 받았습니다.</p>\n<!--22--><p class='change'> 연기로 대피하지 못한 인부 10여 명은 옥상에서 당국의 구조를 기다리고 있습니다.</p>\n<!--26--><p class='change'> 소방 당국은 이 건물에서 리모델링 공사를 하던 3층에서 불이 시작된 것으로 보고, 화재를 완전히 진압한 뒤 구체적인 발화 원인을 조사할 계획입니다.</p>\n<!--30--><p class='change'> 화재로 검은 연기가 크게 번지며 일대가 혼란을 겪었습니다.</p>\n<!--34--><p class='change'> (사진=독자 제공, 연합뉴스)</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299719&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n\n\n▲ 21일 서울광장 인근 서울센터빌딩에서 화재가 발생해 소방대원들이 진화 작업을 하고 있다.\n 오늘(21일) 오전 9시 46분 서울 중구 소공동 소재 서울센터빌딩에서 화재가 발생해 3명이 응급조치를 받고 110여 명이 대피했습니다.\n 소방 당국은 불이 난지 약 44분 만인 10시 30분 초진에 성공한 뒤 나머지 불을 정리 중입니다.\n 현재까지 인명 피해는 없는 것으로 확인됐습니다.\n 공사 중이던 인부 104명은 스스로 대피했고 3명이 응급조치를 받았습니다.\n 연기로 대피하지 못한 인부 10여 명은 옥상에서 당국의 구조를 기다리고 있습니다.\n 소방 당국은 이 건물에서 리모델링 공사를 하던 3층에서 불이 시작된 것으로 보고, 화재를 완전히 진압한 뒤 구체적인 발화 원인을 조사할 계획입니다.\n 화재로 검은 연기가 크게 번지며 일대가 혼란을 겪었습니다.\n (사진=독자 제공, 연합뉴스)\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120526_1280.jpg",
+            "type": "image/jpeg",
+            "length": "426797"
+          },
+          "content": "&#9650; 21일 서울광장 인근 서울센터빌딩에서 화재가 발생해 소방대원들이 진화 작업을 하고 있다.오늘 오전 9시 46분 서울 중구 소공동 …",
+          "contentSnippet": "▲ 21일 서울광장 인근 서울센터빌딩에서 화재가 발생해 소방대원들이 진화 작업을 하고 있다.오늘 오전 9시 46분 서울 중구 소공동 …",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299719",
+          "categories": [
+            {
+              "_": "사회",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=03"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "화재",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%99%94%EC%9E%AC"
+              }
+            },
+            {
+              "_": "중구",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%A4%91%EA%B5%AC"
+              }
+            },
+            {
+              "_": "서울",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%84%9C%EC%9A%B8"
+              }
+            },
+            {
+              "_": "10여 명",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=10%EC%97%AC+%EB%AA%85"
+              }
+            },
+            {
+              "_": "서울센터빌딩",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%84%9C%EC%9A%B8%EC%84%BC%ED%84%B0%EB%B9%8C%EB%94%A9"
+              }
+            },
+            {
+              "_": "3명",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=3%EB%AA%85"
+              }
+            },
+            {
+              "_": "도심",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%8F%84%EC%8B%AC"
+              }
+            }
+          ],
+          "isoDate": "2025-10-21T02:17:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "newsservice@sbs.co.kr(SBS)",
+          "title": "\"오늘은 나네\" 1년간 불려간 교직원…이사장 갑질",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299064",
+          "pubDate": "Tue, 21 Oct 2025 09:54:00 +0900",
+          "author": "newsservice@sbs.co.kr(SBS)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299064&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t서울의 한 사립학교 이사장이 교직원들에게 손자 등하교를 시키고 학교 예산까지 마음대로 썼다는 의혹이 제기됐다고요? 최근 서울의 한 사립학교 이사…\r\n\t\t\t\t\t\t\t<iframe width=\"640\" height=\"360\" src=\"https://news.sbs.co.kr/news/newsPlayerIframe.do?news_id=N1008299064&type=NEWS&plink=RSS\" frameborder=\"0\" scrolling=\"no\"><img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120459_700.jpg\" width=\"700\"></iframe><p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299064&amp;plink=PLAY&amp;cooper=RSS&amp;autoplay=Y\">▶ 영상 시청</a></p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><p class='change'>서울의 한 사립학교 이사장이 교직원들에게 손자 등하교를 시키고 학교 예산까지 마음대로 썼다는 의혹이 제기됐다고요?&nbsp;</p>\n<!--4--><p class='change'> 최근 서울의 한 사립학교 이사장 A씨가 교직원들에게 갑질을 일삼았다는 의혹이 제기됐습니다.</p>\n<!--8--><p class='change'> 서울시교육청 감사 결과, A씨는 지난해 3월부터 약 1년 동안 교직원들에게 순번을 정해 학교 법인 차량으로 손자를 등하교시키게 했고, 현장 체험 학습에도 동행시킨 것으로 드러났습니다.</p>\n<!--12--><p class='change'> 또 교직원에게 반려견의 배변 처리를 시키거나, 종합소득세와 손자 돌봄비를 학교 예산으로 결제한 정황도 확인됐습니다.</p>\n<!--16--><p class='change'> 이사장은 자신의 자녀를 학교 법인 산하 사업체에 채용해 일하지 않고 임금을 받게 한 사실도 적발됐습니다.</p>\n<!--20--><p class='change'> 유용된 금액은 약 9천만 원에 달합니다.</p>\n<!--24--><p class='change'> 서울시교육청은 A씨를 횡령과 배임 혐의로 경찰에 고발하고, 임원 승인 취소 절차를 추진하기로 했습니다.</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299064&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t서울의 한 사립학교 이사장이 교직원들에게 손자 등하교를 시키고 학교 예산까지 마음대로 썼다는 의혹이 제기됐다고요? 최근 서울의 한 사립학교 이사…\r\n\t\t\t\t\t\t\t\n▶ 영상 시청\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n서울의 한 사립학교 이사장이 교직원들에게 손자 등하교를 시키고 학교 예산까지 마음대로 썼다는 의혹이 제기됐다고요? \n 최근 서울의 한 사립학교 이사장 A씨가 교직원들에게 갑질을 일삼았다는 의혹이 제기됐습니다.\n 서울시교육청 감사 결과, A씨는 지난해 3월부터 약 1년 동안 교직원들에게 순번을 정해 학교 법인 차량으로 손자를 등하교시키게 했고, 현장 체험 학습에도 동행시킨 것으로 드러났습니다.\n 또 교직원에게 반려견의 배변 처리를 시키거나, 종합소득세와 손자 돌봄비를 학교 예산으로 결제한 정황도 확인됐습니다.\n 이사장은 자신의 자녀를 학교 법인 산하 사업체에 채용해 일하지 않고 임금을 받게 한 사실도 적발됐습니다.\n 유용된 금액은 약 9천만 원에 달합니다.\n 서울시교육청은 A씨를 횡령과 배임 혐의로 경찰에 고발하고, 임원 승인 취소 절차를 추진하기로 했습니다.\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120459_1280.jpg",
+            "type": "image/jpeg",
+            "length": "86309"
+          },
+          "content": "서울의 한 사립학교 이사장이 교직원들에게 손자 등하교를 시키고 학교 예산까지 마음대로 썼다는 의혹이 제기됐다고요? 최근 서울의 한 사립학교 이사…",
+          "contentSnippet": "서울의 한 사립학교 이사장이 교직원들에게 손자 등하교를 시키고 학교 예산까지 마음대로 썼다는 의혹이 제기됐다고요? 최근 서울의 한 사립학교 이사…",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299064",
+          "categories": [
+            {
+              "_": "사회",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=03"
+              }
+            },
+            {
+              "_": "모닝와이드 2부",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/programMain.do?prog_cd="
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "학교",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%95%99%EA%B5%90"
+              }
+            },
+            {
+              "_": "오늘은 나네",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%98%A4%EB%8A%98%EC%9D%80+%EB%82%98%EB%84%A4"
+              }
+            },
+            {
+              "_": "손자",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%86%90%EC%9E%90"
+              }
+            },
+            {
+              "_": "의혹",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%9D%98%ED%98%B9"
+              }
+            },
+            {
+              "_": "서울",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%84%9C%EC%9A%B8"
+              }
+            },
+            {
+              "_": "차량",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%B0%A8%EB%9F%89"
+              }
+            },
+            {
+              "_": "임금",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%9E%84%EA%B8%88"
+              }
+            },
+            {
+              "_": "뉴스딱",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsPlusList.do?themeId=10000000188"
+              }
+            }
+          ],
+          "isoDate": "2025-10-21T00:54:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "newsservice@sbs.co.kr(SBS)",
+          "title": "\"179만 원인데\" 분통…아이폰17 변색 이유 봤더니",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299061",
+          "pubDate": "Tue, 21 Oct 2025 09:54:00 +0900",
+          "author": "newsservice@sbs.co.kr(SBS)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299061&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t이번 소식은 변색 논란입니다.아이폰 이야기거든요.출시된 지 한 달도 되지 않은 애플의 아이폰 17 프로맥스 일부 기기가 변색되는 사례가 잇따르고…\r\n\t\t\t\t\t\t\t<iframe width=\"640\" height=\"360\" src=\"https://news.sbs.co.kr/news/newsPlayerIframe.do?news_id=N1008299061&type=NEWS&plink=RSS\" frameborder=\"0\" scrolling=\"no\"><img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120445_700.jpg\" width=\"700\"></iframe><p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299061&amp;plink=PLAY&amp;cooper=RSS&amp;autoplay=Y\">▶ 영상 시청</a></p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><p class='change'>이번 소식은 변색 논란입니다.</p>\n<!--4--><p class='change'> 아이폰 이야기거든요.</p>\n<!--8--><p class='change'> 출시된 지 한 달도 되지 않은 애플의 아이폰 17 프로맥스 일부 기기가 변색되는 사례가 잇따르고 있다는 기사입니다.</p>\n<!--12--><p class='change'> 최근 미국 온라인 커뮤니티에는 아이폰 17의 프로맥스 코스믹 오렌지 모델이 구매 2주 만에 로즈골드 색상으로 변했다며 사진이 올라왔습니다.</p>\n<!--16--><p class='change'> 이런 사진인데요.</p>\n<!--20--><p class='change'> 진짜 좀 핑크색이랑 가깝게 변색이 된 것처럼 보이기도 합니다.</p>\n<!--24--><p class='change'> 국내 온라인에도 투명 케이스를 끼고 다녔는데 케이스에서 뚫린 부분만 변색이 됐다며 이게 말이 되느냐라는 글도 올라왔습니다.</p>\n<!--28--><p class='change'> IT 전문 매체와 전문가들은 이런 변 현상이 알루미늄 산화에서 비롯된 것으로 보인다며 특정 모델 생산 과정에서 보호 코팅이 제대로 안 돼서 생긴 문제일 수 있다고 설명했습니다.</p>\n<!--32--><p class='change'> 애플 측은 아직 공식 입장을 발표하지 않은 상황입니다.</p>\n<!--36--><p class='change'> (화면출처 : 페이스북·레딧)</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299061&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t이번 소식은 변색 논란입니다.아이폰 이야기거든요.출시된 지 한 달도 되지 않은 애플의 아이폰 17 프로맥스 일부 기기가 변색되는 사례가 잇따르고…\r\n\t\t\t\t\t\t\t\n▶ 영상 시청\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n이번 소식은 변색 논란입니다.\n 아이폰 이야기거든요.\n 출시된 지 한 달도 되지 않은 애플의 아이폰 17 프로맥스 일부 기기가 변색되는 사례가 잇따르고 있다는 기사입니다.\n 최근 미국 온라인 커뮤니티에는 아이폰 17의 프로맥스 코스믹 오렌지 모델이 구매 2주 만에 로즈골드 색상으로 변했다며 사진이 올라왔습니다.\n 이런 사진인데요.\n 진짜 좀 핑크색이랑 가깝게 변색이 된 것처럼 보이기도 합니다.\n 국내 온라인에도 투명 케이스를 끼고 다녔는데 케이스에서 뚫린 부분만 변색이 됐다며 이게 말이 되느냐라는 글도 올라왔습니다.\n IT 전문 매체와 전문가들은 이런 변 현상이 알루미늄 산화에서 비롯된 것으로 보인다며 특정 모델 생산 과정에서 보호 코팅이 제대로 안 돼서 생긴 문제일 수 있다고 설명했습니다.\n 애플 측은 아직 공식 입장을 발표하지 않은 상황입니다.\n (화면출처 : 페이스북·레딧)\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120445_1280.jpg",
+            "type": "image/jpeg",
+            "length": "95348"
+          },
+          "content": "이번 소식은 변색 논란입니다.아이폰 이야기거든요.출시된 지 한 달도 되지 않은 애플의 아이폰 17 프로맥스 일부 기기가 변색되는 사례가 잇따르고…",
+          "contentSnippet": "이번 소식은 변색 논란입니다.아이폰 이야기거든요.출시된 지 한 달도 되지 않은 애플의 아이폰 17 프로맥스 일부 기기가 변색되는 사례가 잇따르고…",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299061",
+          "categories": [
+            {
+              "_": "사회",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=03"
+              }
+            },
+            {
+              "_": "모닝와이드 2부",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/programMain.do?prog_cd="
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "미국",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%AF%B8%EA%B5%AD"
+              }
+            },
+            {
+              "_": "논란",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%85%BC%EB%9E%80"
+              }
+            },
+            {
+              "_": "179만 원인데",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=179%EB%A7%8C+%EC%9B%90%EC%9D%B8%EB%8D%B0"
+              }
+            },
+            {
+              "_": "변색",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%B3%80%EC%83%89"
+              }
+            },
+            {
+              "_": "아이폰17",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%95%84%EC%9D%B4%ED%8F%B017"
+              }
+            },
+            {
+              "_": "분통",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%B6%84%ED%86%B5"
+              }
+            },
+            {
+              "_": "실시간 e뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsPlusList.do?themeId=10000000314"
+              }
+            }
+          ],
+          "isoDate": "2025-10-21T00:54:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "newsservice@sbs.co.kr(SBS)",
+          "title": "차 훔쳤다 곧바로 후진…\"절대 안 탔을 것\" 무슨 일",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299069",
+          "pubDate": "Tue, 21 Oct 2025 08:00:00 +0900",
+          "author": "newsservice@sbs.co.kr(SBS)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299069&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t도둑에게도 최소한의 양심이란 게 있었던 걸까요?미국에서 훔친 차량을 다시 돌려준 도둑의 사연이 화제를 모으고 있습니다.주유소에서 담배라니, 이게…\r\n\t\t\t\t\t\t\t<iframe width=\"640\" height=\"360\" src=\"https://news.sbs.co.kr/news/newsPlayerIframe.do?news_id=N1008299069&type=NEWS&plink=RSS\" frameborder=\"0\" scrolling=\"no\"><img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120472_700.jpg\" width=\"700\"></iframe><p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299069&amp;plink=PLAY&amp;cooper=RSS&amp;autoplay=Y\">▶ 영상 시청</a></p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><p class='change'>도둑에게도 최소한의 양심이란 게 있었던 걸까요?</p>\n<!--4--><p class='change'> 미국에서 훔친 차량을 다시 돌려준 도둑의 사연이 화제를 모으고 있습니다.</p>\n<!--8--><p class='change'> 주유소에서 담배라니, 이게 무슨 만행이죠? 게다가 이 남성, 갑자기 남의 차에 올라타더니 그대로 줄행랑을 칩니다.</p>\n<!--12--><p class='change'> 미국 플로리다주에서 일어난 일입니다.</p>\n<!--16--><p class='change'> 그런데 차를 훔쳐 달아났던 도둑이 잠시 후 스스로 돌아왔습니다.</p>\n<!--20--><p class='change'> 알고 보니 차량 뒷좌석에 1살 된 아이가 있다는 걸 뒤늦게 알아차렸기 때문입니다.</p>\n<!--24--><p class='change'> 피해 여성은 당시 주유소 안 편의점에 들르려고 잠시 차를 비운 상태였는데, 남성은 아이가 있는 줄 알았다면 절대 타지 않았을 것이라며, 피해 여성에게 사과한 것으로 알려졌습니다.</p>\n<!--28--><p class='change'> 현지 경찰은 남성이 차량 절도와 아동 납치 감금 혐의로 체포됐다고 밝혔습니다.</p>\n<!--32--><p class='change'> (화면출처 : 엑스 Unlimited L's)</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299069&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t도둑에게도 최소한의 양심이란 게 있었던 걸까요?미국에서 훔친 차량을 다시 돌려준 도둑의 사연이 화제를 모으고 있습니다.주유소에서 담배라니, 이게…\r\n\t\t\t\t\t\t\t\n▶ 영상 시청\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n도둑에게도 최소한의 양심이란 게 있었던 걸까요?\n 미국에서 훔친 차량을 다시 돌려준 도둑의 사연이 화제를 모으고 있습니다.\n 주유소에서 담배라니, 이게 무슨 만행이죠? 게다가 이 남성, 갑자기 남의 차에 올라타더니 그대로 줄행랑을 칩니다.\n 미국 플로리다주에서 일어난 일입니다.\n 그런데 차를 훔쳐 달아났던 도둑이 잠시 후 스스로 돌아왔습니다.\n 알고 보니 차량 뒷좌석에 1살 된 아이가 있다는 걸 뒤늦게 알아차렸기 때문입니다.\n 피해 여성은 당시 주유소 안 편의점에 들르려고 잠시 차를 비운 상태였는데, 남성은 아이가 있는 줄 알았다면 절대 타지 않았을 것이라며, 피해 여성에게 사과한 것으로 알려졌습니다.\n 현지 경찰은 남성이 차량 절도와 아동 납치 감금 혐의로 체포됐다고 밝혔습니다.\n (화면출처 : 엑스 Unlimited L's)\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120472_1280.jpg",
+            "type": "image/jpeg",
+            "length": "136680"
+          },
+          "content": "도둑에게도 최소한의 양심이란 게 있었던 걸까요?미국에서 훔친 차량을 다시 돌려준 도둑의 사연이 화제를 모으고 있습니다.주유소에서 담배라니, 이게…",
+          "contentSnippet": "도둑에게도 최소한의 양심이란 게 있었던 걸까요?미국에서 훔친 차량을 다시 돌려준 도둑의 사연이 화제를 모으고 있습니다.주유소에서 담배라니, 이게…",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299069",
+          "categories": [
+            {
+              "_": "국제",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=07"
+              }
+            },
+            {
+              "_": "GLOBAL",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=07"
+              }
+            },
+            {
+              "_": "모닝와이드 2부",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/programMain.do?prog_cd="
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "후진",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%9B%84%EC%A7%84"
+              }
+            },
+            {
+              "_": "차량",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%B0%A8%EB%9F%89"
+              }
+            },
+            {
+              "_": "미국",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%AF%B8%EA%B5%AD"
+              }
+            },
+            {
+              "_": "경찰",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B2%BD%EC%B0%B0"
+              }
+            },
+            {
+              "_": "절대",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%A0%88%EB%8C%80"
+              }
+            },
+            {
+              "_": "훔쳤다",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%9B%94%EC%B3%A4%EB%8B%A4"
+              }
+            },
+            {
+              "_": "곧바",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EA%B3%A7%EB%B0%94"
+              }
+            }
+          ],
+          "isoDate": "2025-10-20T23:00:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "newsservice@sbs.co.kr(SBS)",
+          "title": "엎드리자 순식간 변신…핼러윈 의상에 6조 원 쓴다",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299070",
+          "pubDate": "Tue, 21 Oct 2025 08:05:00 +0900",
+          "author": "newsservice@sbs.co.kr(SBS)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299070&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t명절에 절 하는 것도 아니고 아이들이 갑자기 땅바닥에 엎드린다 싶었더니 감쪽같이 자동차와 비행기 등으로 변신합니다.해마다 10월 말에 열리는 미…\r\n\t\t\t\t\t\t\t<iframe width=\"640\" height=\"360\" src=\"https://news.sbs.co.kr/news/newsPlayerIframe.do?news_id=N1008299070&type=NEWS&plink=RSS\" frameborder=\"0\" scrolling=\"no\"><img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120474_700.jpg\" width=\"700\"></iframe><p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299070&amp;plink=PLAY&amp;cooper=RSS&amp;autoplay=Y\">▶ 영상 시청</a></p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><p class='change'>명절에 절 하는 것도 아니고 아이들이 갑자기 땅바닥에 엎드린다 싶었더니 감쪽같이 자동차와 비행기 등으로 변신합니다.</p>\n<!--4--><p class='change'> 해마다 10월 말에 열리는 미국의 대표적인 축제,&nbsp;핼러윈을 맞아 다들 수준 높은 변장으로 이 날에 대한 진심을 보여준 모습입니다.</p>\n<!--8--><p class='change'> 조사 결과, 올해 미국인들은 핼러윈 의상에 43억 달러, 우리 돈 약 6조 원을 소비할 것으로 예상된다는데, 부디 올해는 사건사고 대신 즐거운 추억만 가득한 날로 마무리됐으면 좋겠네요.</p>\n<!--12--><p class='change'> (화면출처 :&nbsp;인스타그램 streetartglobe, newyorkgoodboys)</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299070&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t명절에 절 하는 것도 아니고 아이들이 갑자기 땅바닥에 엎드린다 싶었더니 감쪽같이 자동차와 비행기 등으로 변신합니다.해마다 10월 말에 열리는 미…\r\n\t\t\t\t\t\t\t\n▶ 영상 시청\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n명절에 절 하는 것도 아니고 아이들이 갑자기 땅바닥에 엎드린다 싶었더니 감쪽같이 자동차와 비행기 등으로 변신합니다.\n 해마다 10월 말에 열리는 미국의 대표적인 축제, 핼러윈을 맞아 다들 수준 높은 변장으로 이 날에 대한 진심을 보여준 모습입니다.\n 조사 결과, 올해 미국인들은 핼러윈 의상에 43억 달러, 우리 돈 약 6조 원을 소비할 것으로 예상된다는데, 부디 올해는 사건사고 대신 즐거운 추억만 가득한 날로 마무리됐으면 좋겠네요.\n (화면출처 : 인스타그램 streetartglobe, newyorkgoodboys)\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120474_1280.jpg",
+            "type": "image/jpeg",
+            "length": "236808"
+          },
+          "content": "명절에 절 하는 것도 아니고 아이들이 갑자기 땅바닥에 엎드린다 싶었더니 감쪽같이 자동차와 비행기 등으로 변신합니다.해마다 10월 말에 열리는 미…",
+          "contentSnippet": "명절에 절 하는 것도 아니고 아이들이 갑자기 땅바닥에 엎드린다 싶었더니 감쪽같이 자동차와 비행기 등으로 변신합니다.해마다 10월 말에 열리는 미…",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299070",
+          "categories": [
+            {
+              "_": "국제",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=07"
+              }
+            },
+            {
+              "_": "GLOBAL",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=07"
+              }
+            },
+            {
+              "_": "모닝와이드 2부",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/programMain.do?prog_cd="
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "미국",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%AF%B8%EA%B5%AD"
+              }
+            },
+            {
+              "_": "명절",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%AA%85%EC%A0%88"
+              }
+            },
+            {
+              "_": "6조 원",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=6%EC%A1%B0+%EC%9B%90"
+              }
+            },
+            {
+              "_": "핼러윈",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%95%BC%EB%9F%AC%EC%9C%88"
+              }
+            },
+            {
+              "_": "엎드리자",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%97%8E%EB%93%9C%EB%A6%AC%EC%9E%90"
+              }
+            },
+            {
+              "_": "43억 달러",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=43%EC%96%B5+%EB%8B%AC%EB%9F%AC"
+              }
+            },
+            {
+              "_": "의상",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%9D%98%EC%83%81"
+              }
+            }
+          ],
+          "isoDate": "2025-10-20T23:05:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "creator": "newsservice@sbs.co.kr(SBS)",
+          "title": "어둠 속 국도서 어슬렁…\"형님!\" 5초간 아찔 눈맞춤",
+          "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299068",
+          "pubDate": "Tue, 21 Oct 2025 08:03:00 +0900",
+          "author": "newsservice@sbs.co.kr(SBS)",
+          "content:encoded": "\r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<!-- tracking Pixel -->ⓒ SBS &amp; SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.<img src=\"https://news.sbs.co.kr/news/tracking_RSS.do?news_id=N1008299068&amp;cooper=RSS\" alt='track pixel'><!-- //tracking Pixel -->\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t한밤중 중국 지린성의 한 국도, 차량이 불빛을 비추자 호랑이가 보입니다.중국 지린성 옌볜에서 포착된 야생 백두산 호랑이입니다.운전자가 갑자기 호…\r\n\t\t\t\t\t\t\t<iframe width=\"640\" height=\"360\" src=\"https://news.sbs.co.kr/news/newsPlayerIframe.do?news_id=N1008299068&type=NEWS&plink=RSS\" frameborder=\"0\" scrolling=\"no\"><img src=\"https://img.sbs.co.kr/newimg/news/20251021/202120473_700.jpg\" width=\"700\"></iframe><p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299068&amp;plink=PLAY&amp;cooper=RSS&amp;autoplay=Y\">▶ 영상 시청</a></p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n<!--0--><p class='change'>한밤중 중국 지린성의 한 국도, 차량이 불빛을 비추자 호랑이가 보입니다.</p>\n<!--4--><p class='change'> 중국 지린성 옌볜에서 포착된 야생 백두산 호랑이입니다.</p>\n<!--8--><p class='change'> 운전자가 갑자기 호랑이를 향해 \"형님!\"하고 외치자, 목소리에 반응했는지 호랑이는 다시 도로 위로 올라왔고, 약 5초간 운전자를 쳐다보다가 천천히 어둠 속으로 사라졌다고 하네요.</p>\n<!--12--><p class='change'> 운전자는 당시 호랑이가 체격이 크고 건장했다고 밝혔는데, 이곳은 백두산 관광의 출발지로 특히 지린성에서는 올해만 해도 훈춘, 왕칭 등에서 야생 백두산 호랑이가 잇따라 목격된 바 있습니다.</p>\n<!--16--><p class='change'> (화면출처 : 유튜브 fengmianwanxiang, 더우인)</p>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/endPage.do?news_id=N1008299068&amp;plink=ORI&amp;cooper=RSS\">▶ 이 기사의 전체 내용 확인하기</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://news.sbs.co.kr/news/appinstall.do?plink=APPDOWN&amp;cooper=RSS\">▶  SBS 뉴스 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t<p><a href=\"https://premium.sbs.co.kr/appinstall?utm_source=sbsnews\">▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드</a></p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<p>ⓒ SBS &amp; SBS i  : 무단복제 및 재배포 금지</p>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t",
+          "content:encodedSnippet": "ⓒ SBS & SBS i / RSS 피드는 개인 리더 이용 목적으로 허용 되어 있습니다. 피드를 이용한 게시 등의 무단 복제는 금지 되어 있습니다.\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶ 뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t한밤중 중국 지린성의 한 국도, 차량이 불빛을 비추자 호랑이가 보입니다.중국 지린성 옌볜에서 포착된 야생 백두산 호랑이입니다.운전자가 갑자기 호…\r\n\t\t\t\t\t\t\t\n▶ 영상 시청\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\n\n한밤중 중국 지린성의 한 국도, 차량이 불빛을 비추자 호랑이가 보입니다.\n 중국 지린성 옌볜에서 포착된 야생 백두산 호랑이입니다.\n 운전자가 갑자기 호랑이를 향해 \"형님!\"하고 외치자, 목소리에 반응했는지 호랑이는 다시 도로 위로 올라왔고, 약 5초간 운전자를 쳐다보다가 천천히 어둠 속으로 사라졌다고 하네요.\n 운전자는 당시 호랑이가 체격이 크고 건장했다고 밝혔는데, 이곳은 백두산 관광의 출발지로 특히 지린성에서는 올해만 해도 훈춘, 왕칭 등에서 야생 백두산 호랑이가 잇따라 목격된 바 있습니다.\n (화면출처 : 유튜브 fengmianwanxiang, 더우인)\n\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶ 이 기사의 전체 내용 확인하기\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\n▶  SBS 뉴스 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\n▶  뉴스에 지식을 담다 - 스브스프리미엄 앱 다운로드\n\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\nⓒ SBS & SBS i  : 무단복제 및 재배포 금지",
+          "enclosure": {
+            "url": "https://img.sbs.co.kr/newimg/news/20251021/202120473_1280.jpg",
+            "type": "image/jpeg",
+            "length": "50201"
+          },
+          "content": "한밤중 중국 지린성의 한 국도, 차량이 불빛을 비추자 호랑이가 보입니다.중국 지린성 옌볜에서 포착된 야생 백두산 호랑이입니다.운전자가 갑자기 호…",
+          "contentSnippet": "한밤중 중국 지린성의 한 국도, 차량이 불빛을 비추자 호랑이가 보입니다.중국 지린성 옌볜에서 포착된 야생 백두산 호랑이입니다.운전자가 갑자기 호…",
+          "guid": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008299068",
+          "categories": [
+            {
+              "_": "국제",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=07"
+              }
+            },
+            {
+              "_": "GLOBAL",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/newsSection.do?sectionType=07"
+              }
+            },
+            {
+              "_": "모닝와이드 2부",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/programMain.do?prog_cd="
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS 뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "NEWS",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "뉴스",
+              "$": {
+                "domain": "https://news.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "SBS",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "서울방송",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            {
+              "_": "Seoul Broadcast Station",
+              "$": {
+                "domain": "https://www.sbs.co.kr/"
+              }
+            },
+            "일반기사",
+            {
+              "_": "운전자",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%9A%B4%EC%A0%84%EC%9E%90"
+              }
+            },
+            {
+              "_": "중국",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%A4%91%EA%B5%AD"
+              }
+            },
+            {
+              "_": "차량",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%B0%A8%EB%9F%89"
+              }
+            },
+            {
+              "_": "호랑이",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%ED%98%B8%EB%9E%91%EC%9D%B4"
+              }
+            },
+            {
+              "_": "백두산",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EB%B0%B1%EB%91%90%EC%82%B0"
+              }
+            },
+            {
+              "_": "생생지구촌",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=%EC%83%9D%EC%83%9D%EC%A7%80%EA%B5%AC%EC%B4%8C"
+              }
+            },
+            {
+              "_": "02",
+              "$": {
+                "domain": "https://news.sbs.co.kr/news/keywordList.do?keyword=02"
+              }
+            }
+          ],
+          "isoDate": "2025-10-20T23:03:00.000Z"
+        }
+      }
+    ],
+    "Message a model": [
+      {
+        "json": {
+          "content": {
+            "parts": [
+              {
+                "text": "{\n  \"뉴스명\": \"이 대통령 \\\"투기 수요 철저히 억제…가용 정책 수단 집중 투입\\\"\",\n  \"링크\": \"https://news.sbs.co.kr/news/endPage.do?news_id=N1008300068\",\n  \"문장 요약\": \"이명박 대통령이 민관합동회의를 주재하며 부동산 투기 수요를 철저히 억제하고 서민 주거 안정을 위해 가용한 모든 정책 수단을 투입하겠다고 밝혔다. 대통령은 투기로 인한 집값 상승은 국민 경제에 바람직하지 않다고 강조하며, 실수요자 중심의 주택 공급 원칙을 재확인했다.\",\n  \"한줄평\": \"정부의 강력한 부동산 시장 안정 의지가 엿보이지만, 실제 정책 효과로 이어질지는 지켜봐야 할 것이다.\"\n}"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      }
+    ],
+    "Edit Fields": [
+      {
+        "json": {
+          "text": {
+            "뉴스명": "이 대통령 \"투기 수요 철저히 억제…가용 정책 수단 집중 투입\"",
+            "링크": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008300068",
+            "문장 요약": "이명박 대통령이 민관합동회의를 주재하며 부동산 투기 수요를 철저히 억제하고 서민 주거 안정을 위해 가용한 모든 정책 수단을 투입하겠다고 밝혔다. 대통령은 투기로 인한 집값 상승은 국민 경제에 바람직하지 않다고 강조하며, 실수요자 중심의 주택 공급 원칙을 재확인했다.",
+            "한줄평": "정부의 강력한 부동산 시장 안정 의지가 엿보이지만, 실제 정책 효과로 이어질지는 지켜봐야 할 것이다."
+          }
+        }
+      }
+    ],
+    "Edit Fields1": [
+      {
+        "json": {
+          "뉴스명": "이 대통령 \"투기 수요 철저히 억제…가용 정책 수단 집중 투입\"",
+          "링크": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008300068",
+          "문장 요약": "이명박 대통령이 민관합동회의를 주재하며 부동산 투기 수요를 철저히 억제하고 서민 주거 안정을 위해 가용한 모든 정책 수단을 투입하겠다고 밝혔다. 대통령은 투기로 인한 집값 상승은 국민 경제에 바람직하지 않다고 강조하며, 실수요자 중심의 주택 공급 원칙을 재확인했다.",
+          "한줄평": "정부의 강력한 부동산 시장 안정 의지가 엿보이지만, 실제 정책 효과로 이어질지는 지켜봐야 할 것이다."
+        }
+      }
+    ],
+    "Update row in sheet": [
+      {
+        "json": {
+          "문장 요약": "이명박 대통령이 민관합동회의를 주재하며 부동산 투기 수요를 철저히 억제하고 서민 주거 안정을 위해 가용한 모든 정책 수단을 투입하겠다고 밝혔다. 대통령은 투기로 인한 집값 상승은 국민 경제에 바람직하지 않다고 강조하며, 실수요자 중심의 주택 공급 원칙을 재확인했다.",
+          "한 줄평": "정부의 강력한 부동산 시장 안정 의지가 엿보이지만, 실제 정책 효과로 이어질지는 지켜봐야 할 것이다.",
+          "링크": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008300068"
+        }
+      }
+    ],
+    "Append row in sheet": [
+      {
+        "json": {
+          "뉴스명": "이 대통령 \"투기 수요 철저히 억제…가용 정책 수단 집중 투입\"",
+          "링크": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008300068"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2f330bb5-89de-4f10-9757-48410488e569",
+  "meta": {
+    "instanceId": "184d2d55d2d2bf6864162501b6da1092d25bfc6022df0879a535c0e84bdbce32"
+  },
+  "id": "zjXG9XYOOsSTrCIY",
+  "tags": []
+}

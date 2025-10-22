@@ -185,7 +185,6 @@ https://docs.google.com/document/d/1KLU4oAAprirq1TxqV0p-rOtNxQEIuWCn5Mcd8sbXr8Y/
 
 ### 결과 
 
-```
 **제목:** [초록숲 재단] '내 숨을 위한 한 평의 숲' 캠페인 킥오프 미팅 결과 및 후속 조치 요청
 
 **수신:** 고객사 내부 관리자/임원
@@ -228,11 +227,11 @@ https://docs.google.com/document/d/1KLU4oAAprirq1TxqV0p-rOtNxQEIuWCn5Mcd8sbXr8Y/
 
 **김찬영 드림**
 **유어미디어**
-```
+
 
 ### 결과 2
 
-```
+
 **제목:** [더 어반 십] '스파클링 아이스티' 론칭 캠페인 킥오프 결과 보고 및 승인 요청
 
 **수신:** 고객사 내부 관리자/임원
@@ -276,5 +275,5 @@ https://docs.google.com/document/d/1KLU4oAAprirq1TxqV0p-rOtNxQEIuWCn5Mcd8sbXr8Y/
 
 **김찬영 드림**
 **유어미디어**
-```
+
 

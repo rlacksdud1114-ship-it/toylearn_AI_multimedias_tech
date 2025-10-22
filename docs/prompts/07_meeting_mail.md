@@ -1,3 +1,4 @@
+
 ### 프롬프트
 
 ```
@@ -181,7 +182,7 @@ https://docs.google.com/document/d/1KLU4oAAprirq1TxqV0p-rOtNxQEIuWCn5Mcd8sbXr8Y/
 
 ### 결과 
 
-```
+
 제공해주신 회의록 2건과 가격 정책 문서를 기반으로, 전략적 의사소통 전문가로서 회사 내부 임원 및 관리자에게 전달할 두 개의 전문적인 이메일 초안을 다음과 같이 작성합니다.
 
 ---
@@ -279,4 +280,4 @@ https://docs.google.com/document/d/1KLU4oAAprirq1TxqV0p-rOtNxQEIuWCn5Mcd8sbXr8Y/
 
 **이재현 배상**
 (전략적 의사소통 및 문서화 전문가)
-```
+
